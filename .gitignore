@@ -1,0 +1,13 @@
+# --- Build Output (The Trash) ---
+bin/
+obj/
+
+# --- IDE Settings (VS Code) ---
+.vscode/
+*.user
+
+# --- Mac OS Junk ---
+.DS_Store
+
+# --- Test Zone ---
+Sandbox/
