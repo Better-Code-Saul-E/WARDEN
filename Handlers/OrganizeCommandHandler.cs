@@ -15,11 +15,11 @@ namespace Warden.CLI.Handlers
             _consoleFormatter = consoleFormatter;
         }
 
-        public ExitCode ProcessRequest(string targetDirectory, bool isAuditMode)
+        public ExitCode ProcessRequest(string targetDirectory, bool isAuditMode, string[] orderBy)
         {
             try
             {
-                OrganizeReport result = _organizerService.Organize(targetDirectory, isAuditMode);
+                OrganizeReport result = _organizerService.Organize(targetDirectory, isAuditMode, orderBy);
 
                 _consoleFormatter.Render(result);
                 return ExitCode.Success;

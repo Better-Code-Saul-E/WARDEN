@@ -1,0 +1,13 @@
+using Warden.CLI.Application.Interfaces;
+
+namespace Warden.CLI.Domain.Rules
+{
+    public class ExtensionSortRule : ISortRule
+    {
+        public string GetSubFolderName(FileInfo file)
+        {
+            var extension = file.Extension.TrimStart('.').ToLowerInvariant();
+            return string.IsNullOrEmpty(extension) ? "no_extension" : extension;
+        }
+    }
+}

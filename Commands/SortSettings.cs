@@ -12,5 +12,9 @@ namespace Warden.CLI.Commands
         [CommandOption("--audit|-a")]
         [Description("Perform an audit of the folder without moving files")]
         public bool IsAuditMode { get; set; }
+
+        [CommandOption("--by|-b")]
+        [Description("Define the sorting order(e.g., --by year --by category. Default is category extension)")]
+        public string[] OrderBy {get; set;} = new[] {"category", "extension"};
     }
 }
