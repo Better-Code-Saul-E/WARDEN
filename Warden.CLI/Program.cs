@@ -12,14 +12,17 @@ namespace Warden.CLI
             var registrar = new TypeRegistrar(services);
 
             var app = new CommandApp(registrar);
-            
+
             app.Configure(config =>
             {
                 config.SetApplicationName("WARDEN");
-                
+
                 config.AddCommand<SortCommand>("sort")
-                      .WithDescription("Organizes files into categories (Images, Docs, etc).")
-                      .WithExample(new[] { "sort", ".", "--dry-run" });
+                    .WithDescription("Organizes files into categories (Images, Docs, etc).")
+                    .WithExample(new[] { "sort", ".", "--dry-run" });
+
+                config.AddCommand<WatchCommand>("watch")
+                    .WithDescription("Monitors a directory and sorts new file automatically");
             });
 
             return app.Run(args);
