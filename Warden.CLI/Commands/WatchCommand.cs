@@ -56,7 +56,14 @@ namespace Warden.CLI.Commands
 
             watcher.Created += async (sender, e) =>
             {
-                await Task.Delay(1000, cancellationToken);
+                try
+                {
+                    await Task.Delay(1000, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
 
                 if (!File.Exists(e.FullPath))
                 {
