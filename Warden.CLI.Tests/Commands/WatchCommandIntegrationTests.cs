@@ -36,7 +36,7 @@ namespace Warden.CLI.Tests.Commands
 
             var settings = new SortSettings
             {
-                TargetPath = _sandboxDir,
+                SourcePath = _sandboxDir,
                 OrderBy = new[] { "extension" }
             };
 

@@ -15,11 +15,11 @@ namespace Warden.CLI.Commands
         }
         public override async Task<int> ExecuteAsync(CommandContext context, SortSettings settings, CancellationToken cancellationToken)
         {
-            var targetPath = Path.GetFullPath(settings.TargetPath);
+            var sourcePath = Path.GetFullPath(settings.SourcePath);
 
-            if (!Directory.Exists(targetPath))
+            if (!Directory.Exists(sourcePath))
             {
-                AnsiConsole.MarkupLine($"[red]Error:[/] Directory '{targetPath}' not found.");
+                AnsiConsole.MarkupLine($"[red]Error:[/] Directory '{sourcePath}' not found.");
                 return 1;
             }
 
@@ -38,16 +38,16 @@ namespace Warden.CLI.Commands
                 rules.Add(SortRuleFactory.Create("extension")!);
             }
 
-            AnsiConsole.MarkupLine($"[yellow]Performing initial cleanup of {targetPath}...[/]");
-            var initialReport = _organizerService.Organize(targetPath, false, settings.OrderBy);
+            AnsiConsole.MarkupLine($"[yellow]Performing initial cleanup of {sourcePath}...[/]");
+            var initialReport = _organizerService.Organize(sourcePath, false, settings.OrderBy);
             AnsiConsole.MarkupLine($"[green]   Processed {initialReport.Files.Count} existing files.[/]");
             AnsiConsole.WriteLine();
 
-            AnsiConsole.MarkupLine($"[green]Warden is watching:[/] [blue]{targetPath}[/]");
+            AnsiConsole.MarkupLine($"[green]Warden is watching:[/] [blue]{sourcePath}[/]");
             AnsiConsole.MarkupLine("Press [yellow]Ctrl+C[/] to stop.");
             AnsiConsole.WriteLine();
 
-            using var watcher = new FileSystemWatcher(targetPath);
+            using var watcher = new FileSystemWatcher(sourcePath);
 
             watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime;
             watcher.Filter = "*.*";
@@ -75,7 +75,7 @@ namespace Warden.CLI.Commands
                 try
                 {
                     var fileInfo = new FileInfo(e.FullPath);
-                    var result = _organizerService.ProcessFile(fileInfo, targetPath, false, rules);
+                    var result = _organizerService.ProcessFile(fileInfo, sourcePath, false, rules);
 
                     if (result.Success)
                     {
@@ -85,6 +85,9 @@ namespace Warden.CLI.Commands
                     {
                         AnsiConsole.MarkupLine($"   [red]X {result.Action}[/]");
                     }
+                } catch (IOException)
+                {
+                    AnsiConsole.MarkupLine($"   [yellow]Skipped (File in use):[/] {e.Name}");
                 }
                 catch (Exception ex)
                 {

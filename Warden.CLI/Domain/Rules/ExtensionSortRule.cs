@@ -7,7 +7,7 @@ namespace Warden.CLI.Domain.Rules
         public string GetSubFolderName(FileInfo file)
         {
             var extension = file.Extension.TrimStart('.').ToLowerInvariant();
-            return string.IsNullOrEmpty(extension) ? "no_extension" : extension;
+            return string.IsNullOrEmpty(extension) ? "_NoExtension" : extension;
         }
     }
 }

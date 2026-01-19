@@ -4,17 +4,17 @@ namespace Warden.CLI.Infrastructure.FileSystem
 {
     public class PhysicalFileSystem : IFileSystem
     {
-        public bool DirectoryExists(string directoryPath)
+        public bool DirectoryExists(string path)
         {
-            return Directory.Exists(directoryPath);
+            return Directory.Exists(path);
         }
         public void CreateDirectory(string directoryPath)
         {
             Directory.CreateDirectory(directoryPath);
         }
-        public bool FileExists(string directoryPath)
+        public bool FileExists(string filePath)
         {
-            return File.Exists(directoryPath);
+            return File.Exists(filePath);
         }
         public FileInfo[] GetFiles(string directoryPath)
         {

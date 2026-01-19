@@ -1,5 +1,3 @@
-// change the name
-
 namespace Warden.CLI.Domain.Rules
 {
     public static class FileCategoryRules

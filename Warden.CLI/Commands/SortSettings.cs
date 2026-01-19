@@ -7,7 +7,7 @@ namespace Warden.CLI.Commands
     {
         [CommandArgument(0, "<path>")]
         [Description("The directory to clean up")]
-        public string TargetPath { get; set; } = string.Empty;
+        public string SourcePath { get; set; } = string.Empty;
 
         [CommandOption("--by|-b")]
         [Description("Define the sorting order(e.g., --by year --by category. Default is category extension)")]

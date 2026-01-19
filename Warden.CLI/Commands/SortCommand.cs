@@ -17,7 +17,7 @@ namespace Warden.CLI.Commands
         {
             try
             {
-                var exitCode = _commandHandler.ProcessRequest(settings.TargetPath, false, settings.OrderBy);
+                var exitCode = _commandHandler.ProcessRequest(settings.SourcePath, false, settings.OrderBy);
                 return (int)exitCode;
             }
             catch 

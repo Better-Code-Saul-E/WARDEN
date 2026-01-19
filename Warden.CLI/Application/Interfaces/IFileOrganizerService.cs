@@ -4,7 +4,7 @@ namespace Warden.CLI.Application.Interfaces
 {
     public interface IFileOrganizerService 
     {
-        OrganizeReport Organize(string targetPath, bool IsDryRun, string[] orderBy);
-        FileRecord ProcessFile(FileInfo file, string rootPath, bool IsDryRun, List<ISortRule> rules);
+        OrganizeReport Organize(string sourceDirectory, bool IsDryRun, string[] orderBy);
+        FileRecord ProcessFile(FileInfo file, string sourceDirectory, bool IsDryRun, List<ISortRule> rules);
     }
 } 

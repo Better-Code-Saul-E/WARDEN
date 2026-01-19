@@ -14,11 +14,11 @@ namespace Warden.CLI.Application.Services
             _fileSystem = fileSystem;
         }
 
-        public OrganizeReport Organize(string directoryPath, bool IsDryRun, string[] orderBy)
+        public OrganizeReport Organize(string sourceDirectory, bool isDryRun, string[] orderBy)
         {
-            if (!_fileSystem.DirectoryExists(directoryPath))
+            if (!_fileSystem.DirectoryExists(sourceDirectory))
             {
-                throw new DirectoryNotFoundException($"The directory '{directoryPath}' does not exist.");
+                throw new DirectoryNotFoundException($"The directory '{sourceDirectory}' does not exist.");
             }
 
             var rules = new List<ISortRule>();
@@ -34,22 +34,22 @@ namespace Warden.CLI.Application.Services
 
             var result = new OrganizeReport
             {
-                IsDryRun = IsDryRun,
+                IsDryRun = isDryRun,
                 Files = new List<FileRecord>()
             };
 
-            var files = _fileSystem.GetFiles(directoryPath);
+            var files = _fileSystem.GetFiles(sourceDirectory);
             foreach (var file in files)
             {
-                var fileResult = ProcessFile(file, directoryPath, IsDryRun, rules);
+                var fileResult = ProcessFile(file, sourceDirectory, isDryRun, rules);
                 result.Files.Add(fileResult);
             }
 
             return result;
         }
-        public FileRecord ProcessFile(FileInfo file, string targetDirectory, bool IsDryRun, List<ISortRule> rules)
+        public FileRecord ProcessFile(FileInfo file, string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
-            var currentPath = targetDirectory;
+            var currentPath = sourceDirectory;
             var displayPath = "";
             foreach (var rule in rules)
             {
@@ -63,12 +63,12 @@ namespace Warden.CLI.Application.Services
             var dto = new FileRecord
             {
                 FileName = file.Name,
-                SourcePath = Path.GetFileName(Path.GetFullPath(targetDirectory)),
+                SourcePath = Path.GetFileName(Path.GetFullPath(sourceDirectory)),
                 DestinationPath = displayPath,
                 Success = true, 
             };
 
-            if (IsDryRun)
+            if (isDryRun)
             {
                 dto.Action = "Will Move";
                 return dto;

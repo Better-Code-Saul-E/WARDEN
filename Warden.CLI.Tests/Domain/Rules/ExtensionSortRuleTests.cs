@@ -47,7 +47,7 @@ namespace Warden.CLI.Tests.Domain.Rules
 
             var result = rule.GetSubFolderName(file);
 
-            Assert.Equal("no_extension", result);
+            Assert.Equal("_NoExtension", result);
         }
     }
 }

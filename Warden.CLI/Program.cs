@@ -22,7 +22,7 @@ namespace Warden.CLI
                     .WithExample(new[] { "sort", "." });
                 
                 config.AddCommand<ProbeCommand>("probe")
-                    .WithDescription("Visaullize the file organization without moving files.")
+                    .WithDescription("Visualize the file organization without moving files.")
                     .WithExample(new[] { "probe", "." });
 
                 config.AddCommand<WatchCommand>("watch")

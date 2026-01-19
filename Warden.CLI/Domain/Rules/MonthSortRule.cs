@@ -7,14 +7,7 @@ namespace Warden.CLI.Domain.Rules
     {
         public string GetSubFolderName(FileInfo file)
         {
-            try
-            {
-                return file.LastWriteTime.ToString("MM-MMMM", CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                return "Unknown_Date";
-            }
+            return file.LastWriteTime.ToString("MM-MMMM", CultureInfo.InvariantCulture);
         }
     }
 }

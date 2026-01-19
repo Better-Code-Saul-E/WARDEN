@@ -6,14 +6,7 @@ namespace Warden.CLI.Domain.Rules
     {
         public string GetSubFolderName(FileInfo file)
         {
-            try
-            {
-                return file.LastWriteTime.Year.ToString();
-            }
-            catch
-            {
-                return "Unknown_Date";
-            }
+            return file.LastWriteTime.Year.ToString();
         }
     }
 }
