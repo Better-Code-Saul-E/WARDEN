@@ -6,7 +6,7 @@ using Warden.CLI.Domain.Rules;
 namespace Warden.CLI.Application.Services
 {
     public class FileOrganizerService : IFileOrganizerService
-    {
+    { 
         private readonly IFileSystem _fileSystem;
 
         public FileOrganizerService(IFileSystem fileSystem)
@@ -14,7 +14,7 @@ namespace Warden.CLI.Application.Services
             _fileSystem = fileSystem;
         }
 
-        public OrganizeReport Organize(string directoryPath, bool isAuditMode, string[] orderBy)
+        public OrganizeReport Organize(string directoryPath, bool IsDryRun, string[] orderBy)
         {
             if (!_fileSystem.DirectoryExists(directoryPath))
             {
@@ -32,41 +32,43 @@ namespace Warden.CLI.Application.Services
                 }
             }
 
-
             var result = new OrganizeReport
             {
-                IsAuditMode = isAuditMode,
+                IsDryRun = IsDryRun,
                 Files = new List<FileRecord>()
             };
 
             var files = _fileSystem.GetFiles(directoryPath);
             foreach (var file in files)
             {
-                var fileResult = ProcessFile(file, directoryPath, isAuditMode, rules);
+                var fileResult = ProcessFile(file, directoryPath, IsDryRun, rules);
                 result.Files.Add(fileResult);
             }
 
             return result;
         }
-        public FileRecord ProcessFile(FileInfo file, string targetDirectory, bool isAuditMode, List<ISortRule> rules)
+        public FileRecord ProcessFile(FileInfo file, string targetDirectory, bool IsDryRun, List<ISortRule> rules)
         {
             var currentPath = targetDirectory;
-
+            var displayPath = "";
             foreach (var rule in rules)
             {
                 var subFolder = rule.GetSubFolderName(file);
+                displayPath = Path.Combine(displayPath, subFolder);
                 currentPath = Path.Combine(currentPath, subFolder);
             }
+            
             var destinationFolder = currentPath;
 
             var dto = new FileRecord
             {
                 FileName = file.Name,
-                Category = "Sorted",
-                Success = true,
+                SourcePath = Path.GetFileName(Path.GetFullPath(targetDirectory)),
+                DestinationPath = displayPath,
+                Success = true, 
             };
 
-            if (isAuditMode)
+            if (IsDryRun)
             {
                 dto.Action = "Will Move";
                 return dto;

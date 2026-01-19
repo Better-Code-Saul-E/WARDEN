@@ -8,7 +8,8 @@ namespace Warden.CLI.Application.DTOs
     public class FileRecord
     {
         public string FileName { get; set; } = string.Empty;
-        public string Category { get; set; } = string.Empty;
+        public string SourcePath {get;set; } = string.Empty;
+        public string DestinationPath {get;set;} = string.Empty;
         public string Action { get; set; } = string.Empty;
         public bool Success { get; set; }
     }

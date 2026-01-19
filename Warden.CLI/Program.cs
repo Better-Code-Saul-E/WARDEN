@@ -19,7 +19,11 @@ namespace Warden.CLI
 
                 config.AddCommand<SortCommand>("sort")
                     .WithDescription("Organizes files into categories (Images, Docs, etc).")
-                    .WithExample(new[] { "sort", ".", "--dry-run" });
+                    .WithExample(new[] { "sort", "." });
+                
+                config.AddCommand<ProbeCommand>("probe")
+                    .WithDescription("Visaullize the file organization without moving files.")
+                    .WithExample(new[] { "probe", "." });
 
                 config.AddCommand<WatchCommand>("watch")
                     .WithDescription("Monitors a directory and sorts new file automatically");

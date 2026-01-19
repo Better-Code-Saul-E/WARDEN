@@ -1,7 +1,7 @@
 using Spectre.Console.Cli;
 
 namespace Warden.CLI.DependencyInjection
-{
+{ 
     public class TypeResolver : ITypeResolver, IDisposable
     {
         private readonly IServiceProvider _provider;

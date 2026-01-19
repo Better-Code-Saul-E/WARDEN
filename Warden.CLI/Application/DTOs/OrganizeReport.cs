@@ -5,7 +5,7 @@ namespace Warden.CLI.Application.DTOs
     /// </summary>
     public class OrganizeReport
     {
-        public bool IsAuditMode { get; set; }
+        public bool IsDryRun { get; set; }
         public List<FileRecord> Files { get; set; } = new();
     }
 }

@@ -2,13 +2,13 @@ using Spectre.Console.Cli;
 using Warden.CLI.Domain.Enums;
 using Warden.CLI.Handlers;
 
-namespace Warden.CLI.Commands 
+namespace Warden.CLI.Commands
 {
-    public class SortCommand : Command<SortSettings>
+    public class ProbeCommand : Command<SortSettings>
     {
         private readonly OrganizeCommandHandler _commandHandler;
 
-        public SortCommand(OrganizeCommandHandler commandHandler)
+        public ProbeCommand(OrganizeCommandHandler commandHandler)
         {
             _commandHandler = commandHandler;
         }
@@ -17,10 +17,10 @@ namespace Warden.CLI.Commands
         {
             try
             {
-                var exitCode = _commandHandler.ProcessRequest(settings.TargetPath, false, settings.OrderBy);
+                var exitCode = _commandHandler.ProcessRequest(settings.TargetPath, true, settings.OrderBy);
                 return (int)exitCode;
             }
-            catch 
+            catch
             {
                 return (int)ExitCode.UnhandledError;
             }

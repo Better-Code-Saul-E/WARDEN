@@ -3,7 +3,7 @@ using Warden.CLI.Application.DTOs;
 using Warden.CLI.Domain.Enums;
 
 namespace Warden.CLI.Handlers
-{
+{ 
     public class OrganizeCommandHandler
     {
         private readonly IFileOrganizerService _organizerService;
@@ -15,11 +15,11 @@ namespace Warden.CLI.Handlers
             _consoleFormatter = consoleFormatter;
         }
 
-        public ExitCode ProcessRequest(string targetDirectory, bool isAuditMode, string[] orderBy)
+        public ExitCode ProcessRequest(string targetDirectory, bool IsDryRun, string[] orderBy)
         {
             try
             {
-                OrganizeReport result = _organizerService.Organize(targetDirectory, isAuditMode, orderBy);
+                OrganizeReport result = _organizerService.Organize(targetDirectory, IsDryRun, orderBy);
 
                 _consoleFormatter.Render(result);
                 return ExitCode.Success;

@@ -4,7 +4,7 @@ using Warden.CLI.Application.Services;
 using Warden.CLI.Handlers;
 using Warden.CLI.Infrastructure.FileSystem;
 using Warden.CLI.Output;
-
+ 
 namespace Warden.CLI.DependencyInjection
 {
     /// <summary>

@@ -7,4 +7,4 @@ namespace Warden.CLI.Application.Interfaces
         void Render(OrganizeReport result);
         void RenderError(string message);
     }
-}
+} 

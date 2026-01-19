@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
 namespace Warden.CLI.DependencyInjection
-{
+{ 
     /// <summary>
     /// Connects Spectre.Console's command registration with Microsoft.Extensions.DependencyInjection
     /// 

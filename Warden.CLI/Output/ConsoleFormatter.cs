@@ -17,8 +17,9 @@ namespace Warden.CLI.Output
         {
             var table = new Table()
             .AddColumn("File")
-            .AddColumn("Category")
-            .AddColumn("Action");
+            .AddColumn("Current")
+            .AddColumn("Action")
+            .AddColumn("Destination");
 
             table.Border(TableBorder.Rounded);
 
@@ -26,14 +27,15 @@ namespace Warden.CLI.Output
             {
                 table.AddRow(
                     file.FileName,
-                    $"[blue]{file.Category}[/]",
-                    FormatAction(file)
+                    FormatFilePath(file.SourcePath),
+                    FormatAction(file),
+                    FormatFilePath(file.DestinationPath)
                 );
             }
 
             _console.Write(table);
 
-            if (result.IsAuditMode)
+            if (result.IsDryRun)
             {
                 _console.WriteLine("\n[yellow]Dry run. no files were moved.[/]");
             }
@@ -46,16 +48,23 @@ namespace Warden.CLI.Output
         {
             _console.WriteLine($"[red]Error:[/] {message}");
         }
+
+        private static string FormatFilePath(string path)
+        {
+            return $"[blue]{path}[/]";
+        }
         private static string FormatAction(FileRecord file)
         {
             if (!file.Success)
             {
                 return $"[red]{file.Action}[/]";
             }
-            else
+            else if (file.Action.StartsWith("Will"))
             {
-                return $"[green]{file.Action}[/]";
+                return $"[yellow]{file.Action}[/]";
             }
+
+            return $"[green]{file.Action}[/]";
         }
     }
 }
