@@ -38,6 +38,16 @@ namespace Warden.CLI.Tests.Domain.Rules
 
             Assert.Equal("pdf", result);
         }
+        [Fact]
+        public void GetSubFolderName_ReturnsLowerCasedExtension()
+        {
+            var rule = new ExtensionSortRule();
+            var file = CreateTempFile(".JPG");
+
+            var result = rule.GetSubFolderName(file);
+
+            Assert.Equal("jpg", result);
+        }
 
         [Fact]
         public void GetSubFolderName_ReturnsUnknown_WhenNoExtension()

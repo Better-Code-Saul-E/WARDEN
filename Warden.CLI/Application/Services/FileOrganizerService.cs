@@ -46,7 +46,7 @@ namespace Warden.CLI.Application.Services
             }
 
             return result;
-        }
+        } 
         public FileRecord ProcessFile(FileInfo file, string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
             var currentPath = sourceDirectory;
