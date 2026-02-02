@@ -20,13 +20,16 @@ namespace Warden.CLI
                 config.AddCommand<SortCommand>("sort")
                     .WithDescription("Organizes files into categories (Images, Docs, etc).")
                     .WithExample(new[] { "sort", "." });
-                
+
                 config.AddCommand<ProbeCommand>("probe")
                     .WithDescription("Visualize the file organization without moving files.")
                     .WithExample(new[] { "probe", "." });
 
                 config.AddCommand<WatchCommand>("watch")
                     .WithDescription("Monitors a directory and sorts new file automatically");
+
+                config.AddCommand<AuditCommand>("audit")
+                    .WithDescription("View the history of moved files");
             });
 
             return app.Run(args);

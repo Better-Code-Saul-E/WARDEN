@@ -6,7 +6,7 @@ using Warden.CLI.Domain.Rules;
 namespace Warden.CLI.Application.Services
 {
     public class FileOrganizerService : IFileOrganizerService
-    { 
+    {
         private readonly IFileSystem _fileSystem;
 
         public FileOrganizerService(IFileSystem fileSystem)
@@ -46,7 +46,7 @@ namespace Warden.CLI.Application.Services
             }
 
             return result;
-        } 
+        }
         public FileRecord ProcessFile(FileInfo file, string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
             var currentPath = sourceDirectory;
@@ -57,15 +57,15 @@ namespace Warden.CLI.Application.Services
                 displayPath = Path.Combine(displayPath, subFolder);
                 currentPath = Path.Combine(currentPath, subFolder);
             }
-            
+
             var destinationFolder = currentPath;
 
             var dto = new FileRecord
             {
                 FileName = file.Name,
-                SourcePath = Path.GetFileName(Path.GetFullPath(sourceDirectory)),
-                DestinationPath = displayPath,
-                Success = true, 
+                SourcePath = sourceDirectory,
+                DestinationPath = destinationFolder,
+                Success = true,
             };
 
             if (isDryRun)
@@ -87,6 +87,7 @@ namespace Warden.CLI.Application.Services
 
                 _fileSystem.MoveFile(file.FullName, uniqueDestinationPath);
 
+                dto.DestinationPath = uniqueDestinationPath;
 
                 if (wasRenamed)
                 {
@@ -98,6 +99,8 @@ namespace Warden.CLI.Application.Services
                     dto.Action = "Moved";
                     dto.Success = true;
                 }
+
+
             }
             catch (Exception ex)
             {

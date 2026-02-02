@@ -3,15 +3,17 @@ using Warden.CLI.Application.DTOs;
 using Warden.CLI.Domain.Enums;
 
 namespace Warden.CLI.Handlers
-{ 
+{
     public class OrganizeCommandHandler
     {
         private readonly IFileOrganizerService _organizerService;
+        private readonly IAuditService _auditSerivce;
         private readonly IConsoleFormatter _consoleFormatter;
 
-        public OrganizeCommandHandler(IFileOrganizerService organizerService, IConsoleFormatter consoleFormatter)
+        public OrganizeCommandHandler(IFileOrganizerService organizerService, IAuditService auditService, IConsoleFormatter consoleFormatter)
         {
             _organizerService = organizerService;
+            _auditSerivce = auditService;
             _consoleFormatter = consoleFormatter;
         }
 
@@ -20,6 +22,25 @@ namespace Warden.CLI.Handlers
             try
             {
                 OrganizeReport result = _organizerService.Organize(sourceDirectory, isDryRun, orderBy);
+                if (!isDryRun)
+                {
+                    var BatchId = Guid.NewGuid();
+
+                    foreach (var fileRecord in result.Files)
+                    {
+                        LogEntry log = new LogEntry
+                        {
+                            TimeStamp = DateTime.Now,
+                            BatchId = BatchId,
+                            FileName = fileRecord.FileName,
+                            SourcePath = fileRecord.SourcePath,
+                            DestinationPath = fileRecord.DestinationPath,
+                            RuleApplied = string.Join(", ", orderBy),
+                            Action = fileRecord.Action,
+                        };
+                        _auditSerivce.AddEntry(log);
+                    }
+                }
 
                 _consoleFormatter.Render(result);
                 return ExitCode.Success;

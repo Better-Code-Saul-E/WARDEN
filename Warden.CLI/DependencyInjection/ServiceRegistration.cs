@@ -19,6 +19,7 @@ namespace Warden.CLI.DependencyInjection
             services.AddSingleton<IFileSystem, PhysicalFileSystem>();
 
             services.AddSingleton<IFileOrganizerService, FileOrganizerService>();
+            services.AddSingleton<IAuditService, AuditService>();
 
             services.AddSingleton<IConsole, SystemConsole>();
             services.AddSingleton<IConsoleFormatter, ConsoleFormatter>();
