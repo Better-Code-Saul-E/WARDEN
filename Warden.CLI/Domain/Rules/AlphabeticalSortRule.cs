@@ -6,7 +6,15 @@ namespace Warden.CLI.Domain.Rules
     {
         public string GetSubFolderName(FileInfo file)
         {
-            if(string.IsNullOrEmpty(file.Name)) return "_Symbols";
+            if(file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            if (string.IsNullOrEmpty(file.Name))
+            {
+                return "_Symbols";
+            }
 
             var firstCharacter = char.ToUpperInvariant(file.Name[0]);
 
@@ -14,6 +22,7 @@ namespace Warden.CLI.Domain.Rules
             {
                 return "0-9";
             }
+            
             if (char.IsLetter(firstCharacter))
             {
                 return firstCharacter.ToString();

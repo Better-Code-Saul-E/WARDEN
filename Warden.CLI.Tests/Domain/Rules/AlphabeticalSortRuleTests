@@ -1,0 +1,36 @@
+using Warden.CLI.Domain.Rules;
+using Xunit;
+
+namespace Warden.CLI.Tests.Domain.Rules
+{
+    public class AlphabeticalSortRuleSortRuleTests
+    {
+        [Theory]
+        [InlineData("BonsaiTree.txt", "A")]
+        [InlineData("BirthdayPic.png", "B")] 
+        [InlineData("ZooDay.doc", "Z")]
+        [InlineData("100_Days_Of_Code.md", "0-9")]
+        [InlineData("2026_Report.pdf", "0-9")]
+        [InlineData("_config.json", "_Symbols")]
+        [InlineData("!Important.txt", "_Symbols")]
+        [InlineData(".gitignore", "_Symbols")] 
+        public void GetSubFolderName_VariousNames_ReturnsCorrectGroup(string fileName, string expectedGroup)
+        {
+            var rule = new AlphabeticalSortRule();
+            var file = new FileInfo(fileName);
+
+            var result = rule.GetSubFolderName(file);
+
+            Assert.Equal(expectedGroup, result);
+        }
+
+        [Fact]
+        public void GetSubFolderName_NullFile_ThrowsArgumentNullException()
+        {
+            var rule = new AlphabeticalSortRule();
+            FileInfo nullFile = null;
+
+            Assert.Throws<ArgumentNullException>(() => rule.GetSubFolderName(nullFile));
+        }
+    }
+}

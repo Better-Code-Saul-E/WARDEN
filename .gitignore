@@ -12,3 +12,8 @@ obj/
 # --- Test Zone ---
 Sandbox/
 coverage.json
+
+# Code Coverage Reports
+lcov.info
+coverage.json
+TestResults/

@@ -1,3 +1,4 @@
+using System.Data;
 using Warden.CLI.Domain.Rules;
 using Xunit;
 
@@ -6,6 +7,7 @@ namespace Warden.CLI.Tests.Domain.Rules
     public class SizeSortRuleTests : IDisposable
     {
         private readonly List<string> _tempFiles = new();
+
         private FileInfo CreateSizedFile(long bytes)
         {
             var path = Path.GetTempFileName();
@@ -19,6 +21,7 @@ namespace Warden.CLI.Tests.Domain.Rules
             return new FileInfo(path);
 
         }
+        
         public void Dispose()
         {
             foreach (var f in _tempFiles)
@@ -31,36 +34,43 @@ namespace Warden.CLI.Tests.Domain.Rules
         }
 
         [Fact]
-        public void ZeroBytes_ReturnsSmall()
+        public void GetSubFolderName_SmallFile_ReturnsSmall()
         {
-            var file = CreateSizedFile(0); 
-            var result = new SizeSortRule().GetSubFolderName(file);
+            var rule = new SizeSortRule();
+            var file = CreateSizedFile(0);
+            var result = rule.GetSubFolderName(file);
+
             Assert.Equal("Small (<1MB)", result);
         }
 
         [Fact]
-        public void JustUnderOneMB_ReturnsSmall()
+        public void GetSubFolderName_MediumFile_ReturnsMedium()
         {
-            var file = CreateSizedFile(1024 * 1024 - 1); 
-            var result = new SizeSortRule().GetSubFolderName(file);
-            Assert.Equal("Small (<1MB)", result);
-        }
+            var rule = new SizeSortRule();
+            var file = CreateSizedFile(1024L * 1024L * 50L);
+            var result = rule.GetSubFolderName(file);
 
-        [Fact]
-        public void ExactlyOneMB_ReturnsMedium()
-        {
-            var file = CreateSizedFile(1024 * 1024); 
-            var result = new SizeSortRule().GetSubFolderName(file);
             Assert.Equal("Medium (1MB-100MB)", result);
         }
 
         [Fact]
-        public void HugeFile_ReturnsLarge()
+        public void GetSubFolderName_LargeFile_ReturnsLarge()
         {
-            var file = CreateSizedFile(1024L * 1024L * 500L); 
-            var result = new SizeSortRule().GetSubFolderName(file);
+            var rule = new SizeSortRule();
+            var file = CreateSizedFile(1024L * 1024L * 500L);
+            var result = rule.GetSubFolderName(file);
+
             Assert.Equal("Large (100MB-1GB)", result);
         }
 
+        [Fact]
+        public void GetSubFolderName_HugeFile_ReturnsHuge()
+        {
+            var rule = new SizeSortRule();
+            var file = CreateSizedFile(1024L * 1024L * 1024L);
+            var result = rule.GetSubFolderName(file);
+
+            Assert.Equal("Huge (>1GB)", result);
+        }
     }
 }

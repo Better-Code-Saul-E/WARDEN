@@ -7,6 +7,11 @@ namespace Warden.CLI.Domain.Rules
     {
         public string GetSubFolderName(FileInfo file)
         {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+            
             return file.LastWriteTime.ToString("MM-MMMM", CultureInfo.InvariantCulture);
         }
     }

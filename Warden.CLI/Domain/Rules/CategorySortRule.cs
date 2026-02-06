@@ -6,6 +6,11 @@ namespace Warden.CLI.Domain.Rules
     {
         public string GetSubFolderName(FileInfo file)
         {
+            if(file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+            
             return FileCategoryRules.GetCategory(file.Extension);
         }
     }

@@ -6,7 +6,13 @@ namespace Warden.CLI.Domain.Rules
     {
         public string GetSubFolderName(FileInfo file)
         {
+            if(file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             var extension = file.Extension.TrimStart('.').ToLowerInvariant();
+
             return string.IsNullOrEmpty(extension) ? "_NoExtension" : extension;
         }
     }
