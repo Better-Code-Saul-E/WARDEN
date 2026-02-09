@@ -23,6 +23,7 @@ namespace Warden.CLI.DependencyInjection
 
             services.AddSingleton<IConsole, SystemConsole>();
             services.AddSingleton<IConsoleFormatter, ConsoleFormatter>();
+            services.AddSingleton<IAuditFormatter, AuditFormatter>();
 
             services.AddSingleton<OrganizeCommandHandler>();
 
