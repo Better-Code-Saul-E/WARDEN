@@ -28,7 +28,8 @@ namespace Warden.CLI.Tests.Commands
         }
 
         [Fact]
-        public async Task ExecuteAsync_ShouldSortExistingAndNewFiles()
+        [Trait("Category", "Unit")]
+        public async Task ExecuteAsync_FilesAddedToWatchFolder_MovesFilesToTarget()
         {
             var fileSystem = new PhysicalFileSystem();
             var service = new FileOrganizerService(fileSystem);
@@ -42,13 +43,13 @@ namespace Warden.CLI.Tests.Commands
 
             var cts = new CancellationTokenSource();
 
+            var existingFile = Path.Combine(_sandboxDir, "old_photo.jpg");
+            File.WriteAllText(existingFile, "Old Data");
+
             var watchTask = Task.Run(async () =>
             {
                 await command.ExecuteAsync(null!, settings, cts.Token);
             });
-
-            var existingFile = Path.Combine(_sandboxDir, "old_photo.jpg");
-            File.WriteAllText(existingFile, "Old Data");
 
             await Task.Delay(1000);
 

@@ -6,7 +6,7 @@ namespace Warden.CLI.Tests.Domain.Rules
     public class AlphabeticalSortRuleSortRuleTests
     {
         [Theory]
-        [InlineData("BonsaiTree.txt", "A")]
+        [InlineData("AppleTree.txt", "A")]
         [InlineData("BirthdayPic.png", "B")] 
         [InlineData("ZooDay.doc", "Z")]
         [InlineData("100_Days_Of_Code.md", "0-9")]
