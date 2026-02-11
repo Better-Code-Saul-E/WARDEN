@@ -6,13 +6,11 @@ namespace Warden.CLI.Application.Services
 {
     public class AuditService : IAuditService
     {
-        private readonly string basePath;
-        private readonly string logDirectory;
         private string _logFilePath;
-        public AuditService()
+        public AuditService(string? basePath = null)
         {
-            basePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            logDirectory = Path.Combine(basePath, ".warden");
+            string root = basePath ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string logDirectory = Path.Combine(root, ".warden");
 
             if (!Directory.Exists(logDirectory))
             {
