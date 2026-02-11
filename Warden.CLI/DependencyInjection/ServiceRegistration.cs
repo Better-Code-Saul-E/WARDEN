@@ -16,10 +16,10 @@ namespace Warden.CLI.DependencyInjection
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<IFileSystem, PhysicalFileSystem>();
-
             services.AddSingleton<IFileOrganizerService, FileOrganizerService>();
             services.AddSingleton<IAuditService, AuditService>();
+
+            services.AddSingleton<IFileSystem, PhysicalFileSystem>();
 
             services.AddSingleton<IConsole, SystemConsole>();
             services.AddSingleton<IConsoleFormatter, ConsoleFormatter>();
