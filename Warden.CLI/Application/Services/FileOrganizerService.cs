@@ -63,8 +63,7 @@ namespace Warden.CLI.Application.Services
             var dto = new FileRecord
             {
                 FileName = file.Name,
-                SourcePath = sourceDirectory,
-                DestinationPath = destinationFolder,
+                SourcePath = file.FullName,
                 Success = true,
             };
 
@@ -87,7 +86,7 @@ namespace Warden.CLI.Application.Services
 
                 _fileSystem.MoveFile(file.FullName, uniqueDestinationPath);
 
-                dto.DestinationPath = uniqueDestinationPath;
+                dto.DestinationPath = Path.GetFullPath(uniqueDestinationPath);
 
                 if (wasRenamed)
                 {

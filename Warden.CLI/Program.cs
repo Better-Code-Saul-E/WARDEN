@@ -30,6 +30,9 @@ namespace Warden.CLI
 
                 config.AddCommand<AuditCommand>("audit")
                     .WithDescription("View the history of moved files");
+
+                config.AddCommand<UndoCommand>("undo")
+                    .WithDescription("Undo the previous batch action.");
             });
 
             return app.Run(args);

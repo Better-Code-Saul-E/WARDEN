@@ -6,5 +6,6 @@ namespace Warden.CLI.Application.Interfaces
     {
         void AddEntry(LogEntry entry);
         List<LogEntry> GetRecentLogs(int amount);
+        List<LogEntry> GetLastBatch();
     }
 }
