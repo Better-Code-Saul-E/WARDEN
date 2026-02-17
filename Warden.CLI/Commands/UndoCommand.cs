@@ -6,7 +6,6 @@ namespace Warden.CLI.Commands
     public class UndoCommand : Command<UndoSettings>
     {
         private readonly IAuditService _auditService;
-        private readonly IFileOrganizerService _organizerService;
         private readonly IFileSystem _fileSystem;
         private readonly IConsole _console;
 

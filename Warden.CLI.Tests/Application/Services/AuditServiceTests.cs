@@ -40,5 +40,32 @@ namespace Warden.CLI.Tests.Application.Services
 
         }
 
+        [Fact]
+        [Trait("Category", "Integration")]
+        public void GetLastBatch_BatchEntries_ReturnMostRecentBatch()
+        {
+            var service = new AuditService(_testDir);
+
+            var oldBatchId = Guid.NewGuid();
+            var newBatchId = Guid.NewGuid();
+
+            List<LogEntry> originalLogs = new List<LogEntry>
+            {
+                new LogEntry{ BatchId=oldBatchId, FileName = "fake.txt", Action = "Moved" },
+                new LogEntry{ BatchId=newBatchId, FileName = "fake.doc", Action = "Moved" },
+                new LogEntry{ BatchId=newBatchId, FileName = "fake.img ", Action = "Moved" }
+            };
+
+            foreach (var log in originalLogs)
+            {
+                service.AddEntry(log);
+            }
+
+            var result = service.GetLastBatch();
+
+            Assert.Equal(2, result.Count);
+            Assert.Equal(newBatchId, result[0].BatchId);
+        }
+
     }
 }
