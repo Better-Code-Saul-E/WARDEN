@@ -1,6 +1,6 @@
 # Warden
 
-Warden is a command-line file organization tool that automatically structures directories using customizable rules. It brings order to chaotic folders and features a transaction-based **Undo System** to instantly reverse operations.
+Warden is a command-line file organization tool that automatically structures directories using customizable rules features a transaction-based **Undo System** to reverse operations.
 
 ![Version](https://img.shields.io/github/v/release/Better-Code-Saul-E/WARDEN)
 ![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)
