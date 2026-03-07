@@ -17,3 +17,6 @@ coverage.json
 lcov.info
 coverage.json
 TestResults/
+
+# -- Publish -- 
+publish/
