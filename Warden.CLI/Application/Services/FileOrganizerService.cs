@@ -69,9 +69,20 @@ namespace Warden.CLI.Application.Services
                 DestinationPath = Path.GetFullPath(uniqueDestinationPath)
             };
 
+            var projectedFileName = Path.GetFileName(uniqueDestinationPath);
+
             if (isDryRun)
             {
-                dto.Action = "Will Move";
+                if (!projectedFileName.Equals(file.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    dto.Action = $"Will Move and Rename to ${projectedFileName}";
+                }
+                else
+                {
+                    dto.Action = "Will Move";
+
+                }
+
                 return dto;
             }
 
@@ -82,14 +93,13 @@ namespace Warden.CLI.Application.Services
                     _fileSystem.CreateDirectory(destinationFolder);
                 }
 
-                var finalFileName = Path.GetFileName(uniqueDestinationPath);
-                var wasRenamed = !finalFileName.Equals(file.Name, StringComparison.OrdinalIgnoreCase);
+                var wasRenamed = !projectedFileName.Equals(file.Name, StringComparison.OrdinalIgnoreCase);
 
                 _fileSystem.MoveFile(file.FullName, uniqueDestinationPath);
 
                 if (wasRenamed)
                 {
-                    dto.Action = $"Renamed to {finalFileName}";
+                    dto.Action = $"Moved and Renamed to {projectedFileName}";
                     dto.Success = true;
                 }
                 else
@@ -97,7 +107,6 @@ namespace Warden.CLI.Application.Services
                     dto.Action = "Moved";
                     dto.Success = true;
                 }
-
 
             }
             catch (Exception ex)
