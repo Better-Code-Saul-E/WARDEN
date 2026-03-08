@@ -40,7 +40,12 @@ namespace Warden.CLI.Application.Services
 
             var files = _fileSystem.GetFiles(sourceDirectory);
             foreach (var file in files)
-            {
+            {  
+                if (file.Name.StartsWith("."))
+                {
+                    continue;
+                }
+
                 var fileResult = ProcessFile(file, sourceDirectory, isDryRun, rules);
                 result.Files.Add(fileResult);
             }
