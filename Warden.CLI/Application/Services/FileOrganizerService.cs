@@ -59,12 +59,14 @@ namespace Warden.CLI.Application.Services
             }
 
             var destinationFolder = currentPath;
+            var uniqueDestinationPath = GetUniqueFilePath(destinationFolder, file.Name);
 
             var dto = new FileRecord
             {
                 FileName = file.Name,
                 SourcePath = file.FullName,
                 Success = true,
+                DestinationPath = Path.GetFullPath(uniqueDestinationPath)
             };
 
             if (isDryRun)
@@ -80,13 +82,10 @@ namespace Warden.CLI.Application.Services
                     _fileSystem.CreateDirectory(destinationFolder);
                 }
 
-                var uniqueDestinationPath = GetUniqueFilePath(destinationFolder, file.Name);
                 var finalFileName = Path.GetFileName(uniqueDestinationPath);
                 var wasRenamed = !finalFileName.Equals(file.Name, StringComparison.OrdinalIgnoreCase);
 
                 _fileSystem.MoveFile(file.FullName, uniqueDestinationPath);
-
-                dto.DestinationPath = Path.GetFullPath(uniqueDestinationPath);
 
                 if (wasRenamed)
                 {
