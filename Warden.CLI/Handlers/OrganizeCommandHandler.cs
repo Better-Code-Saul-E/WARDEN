@@ -1,6 +1,8 @@
 using Warden.CLI.Application.Interfaces;
 using Warden.CLI.Application.DTOs;
 using Warden.CLI.Domain.Enums;
+using Warden.CLI.Application.Factories;
+using Spectre.Console;
 
 namespace Warden.CLI.Handlers
 {
@@ -54,6 +56,54 @@ namespace Warden.CLI.Handlers
             {
                 _consoleFormatter.RenderError($"Unexpected error: {ex.Message}");
                 return ExitCode.UnhandledError;
+            }
+        }
+
+        public void ProcessSingleFile(FileInfo file, string sourceDirectory, string[] orderBy)
+        {
+            try
+            {
+                var rules = new List<ISortRule>();
+                foreach (var ruleName in orderBy)
+                {
+                    var rule = SortRuleFactory.Create(ruleName);
+
+                    if (rule != null)
+                    {
+                        rules.Add(rule);
+                    }
+                }
+
+                if (file.Name.StartsWith("."))
+                {
+                    return;
+                }
+
+                var fileRecord = _organizerService.ProcessFile(file, sourceDirectory, false, rules);
+
+                if (fileRecord.Success)
+                {
+                    LogEntry log = new LogEntry
+                    {
+                        TimeStamp = DateTime.Now,
+                        BatchId = Guid.NewGuid(),
+                        FileName = fileRecord.FileName,
+                        SourcePath = fileRecord.SourcePath,
+                        DestinationPath = fileRecord.DestinationPath,
+                        RuleApplied = string.Join(", ", orderBy),
+                        Action = fileRecord.Action,
+                    };
+
+                    _auditSerivce.AddEntry(log);
+                    AnsiConsole.MarkupLine($"[green]-> {fileRecord.Action}[/]: [blue]{fileRecord.FileName}[/]");
+                }
+
+                AnsiConsole.MarkupLine($"[red]X {fileRecord.Action}[/]: [blue]{fileRecord.FileName}[/]");
+
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]Error processing {file.Name}:[/] {ex.Message}");
             }
         }
     }

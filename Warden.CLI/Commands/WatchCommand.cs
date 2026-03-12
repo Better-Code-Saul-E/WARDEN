@@ -2,16 +2,18 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Warden.CLI.Application.Interfaces;
 using Warden.CLI.Application.Factories;
+using Warden.CLI.Handlers;
 
 namespace Warden.CLI.Commands
 {
     public class WatchCommand : AsyncCommand<SortSettings>
     {
-        private readonly IFileOrganizerService _organizerService;
+        private readonly OrganizeCommandHandler _commandHandler;
 
-        public WatchCommand(IFileOrganizerService organizerService)
+        public WatchCommand(OrganizeCommandHandler commandHandler)
         {
-            _organizerService = organizerService;
+            _commandHandler = commandHandler;
+
         }
         public override async Task<int> ExecuteAsync(CommandContext context, SortSettings settings, CancellationToken cancellationToken)
         {
@@ -23,26 +25,7 @@ namespace Warden.CLI.Commands
                 return 1;
             }
 
-            var rules = new List<ISortRule>();
-            foreach (var ruleName in settings.OrderBy)
-            {
-                var rule = SortRuleFactory.Create(ruleName);
-                if (rule != null)
-                {
-                    rules.Add(rule);
-                }
-            }
-
-            if (!rules.Any())
-            {
-                rules.Add(SortRuleFactory.Create("extension")!);
-            }
-
-            AnsiConsole.MarkupLine($"[yellow]Performing initial cleanup of {sourcePath}...[/]");
-            var initialReport = _organizerService.Organize(sourcePath, false, settings.OrderBy);
-            AnsiConsole.MarkupLine($"[green]   Processed {initialReport.Files.Count} existing files.[/]");
             AnsiConsole.WriteLine();
-
             AnsiConsole.MarkupLine($"[green]Warden is watching:[/] [blue]{sourcePath}[/]");
             AnsiConsole.MarkupLine("Press [yellow]Ctrl+C[/] to stop.");
             AnsiConsole.WriteLine();
@@ -75,24 +58,18 @@ namespace Warden.CLI.Commands
                 try
                 {
                     var fileInfo = new FileInfo(e.FullPath);
-                    var result = _organizerService.ProcessFile(fileInfo, sourcePath, false, rules);
+                    _commandHandler.ProcessSingleFile(fileInfo, sourcePath, settings.OrderBy);
 
-                    if (result.Success)
-                    {
-                        AnsiConsole.MarkupLine($"   [green]-> {result.Action}[/]");
-                    }
-                    else
-                    {
-                        AnsiConsole.MarkupLine($"   [red]X {result.Action}[/]");
-                    }
-                } catch (IOException)
+                }
+                catch (IOException)
                 {
-                    AnsiConsole.MarkupLine($"   [yellow]Skipped (File in use):[/] {e.Name}");
+                    AnsiConsole.MarkupLine($"[yellow]Skipped (File in use):[/] {e.Name}");
                 }
                 catch (Exception ex)
                 {
-                    AnsiConsole.MarkupLine($"   [red]Error processing file:[/] {ex.Message}");
+                    AnsiConsole.MarkupLine($"[red]Error processing file:[/] {ex.Message}");
                 }
+
             };
 
             try
