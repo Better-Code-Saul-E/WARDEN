@@ -1,7 +1,5 @@
-using Spectre.Console;
 using Spectre.Console.Cli;
 using Warden.CLI.Application.Interfaces;
-using Warden.CLI.Application.Factories;
 using Warden.CLI.Handlers;
 
 namespace Warden.CLI.Commands
@@ -9,26 +7,34 @@ namespace Warden.CLI.Commands
     public class WatchCommand : AsyncCommand<SortSettings>
     {
         private readonly OrganizeCommandHandler _commandHandler;
+        private readonly IConsoleFormatter _consoleFormatter;
 
-        public WatchCommand(OrganizeCommandHandler commandHandler)
+        public WatchCommand(OrganizeCommandHandler commandHandler, IConsoleFormatter consoleFormatter)
         {
             _commandHandler = commandHandler;
-
+            _consoleFormatter = consoleFormatter;
         }
+
         public override async Task<int> ExecuteAsync(CommandContext context, SortSettings settings, CancellationToken cancellationToken)
         {
             var sourcePath = Path.GetFullPath(settings.SourcePath);
 
             if (!Directory.Exists(sourcePath))
             {
-                AnsiConsole.MarkupLine($"[red]Error:[/] Directory '{sourcePath}' not found.");
+                _consoleFormatter.RenderError($"Directory '{sourcePath}' not found.");
                 return 1;
             }
 
-            AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine($"[green]Warden is watching:[/] [blue]{sourcePath}[/]");
-            AnsiConsole.MarkupLine("Press [yellow]Ctrl+C[/] to stop.");
-            AnsiConsole.WriteLine();
+            _consoleFormatter.RenderInfo($"Performing initial cleanup of {sourcePath}...");
+            var exitCode = _commandHandler.ProcessRequest(sourcePath, false, settings.OrderBy);
+
+            if (exitCode != Domain.Enums.ExitCode.Success)
+            {
+                return (int)exitCode;
+            }
+
+            _consoleFormatter.RenderTitle("Warden is watching", sourcePath);
+            _consoleFormatter.RenderInstruction("Press", "Ctrl+C", "to stop.");
 
             using var watcher = new FileSystemWatcher(sourcePath);
 
@@ -53,7 +59,7 @@ namespace Warden.CLI.Commands
                     return;
                 }
 
-                AnsiConsole.MarkupLine($"[grey]Detected:[/] {e.Name}");
+                _consoleFormatter.RenderInfo($"Detected '{e.Name}'");
 
                 try
                 {
@@ -63,11 +69,11 @@ namespace Warden.CLI.Commands
                 }
                 catch (IOException)
                 {
-                    AnsiConsole.MarkupLine($"[yellow]Skipped (File in use):[/] {e.Name}");
+                    _consoleFormatter.RenderWarning($"Skipped (File in use) '{e.Name}'");
                 }
                 catch (Exception ex)
                 {
-                    AnsiConsole.MarkupLine($"[red]Error processing file:[/] {ex.Message}");
+                    _consoleFormatter.RenderError($"Error processing file '{ex.Message}'");
                 }
 
             };

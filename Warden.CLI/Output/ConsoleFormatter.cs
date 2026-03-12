@@ -44,9 +44,40 @@ namespace Warden.CLI.Output
                 _console.WriteLine($"\n[green]Done. Processed {result.Files.Count} files.[/]");
             }
         }
+        public void RenderSingleEvent(FileRecord file)
+        {
+            var coloredAction = FormatAction(file);
+            var coloredFile = FormatFilePath(file.FileName);
+
+            if (file.Success)
+            {
+                _console.WriteLine($"   [green]->[/] {coloredAction}: {coloredFile}");
+            }
+            else
+            {
+                _console.WriteLine($"   [red]X[/] {coloredAction}: {coloredFile}");
+            }
+        }
+        public void RenderTitle(string title, string path)
+        {
+            _console.WriteLine($"\n[green]{title}:[/] [blue]{path}[/]\n");
+        }
+        public void RenderInstruction(string action, string key, string context)
+        {
+            _console.WriteLine($"{action} [yellow]{key}[/] {context}");
+        }
         public void RenderError(string message)
         {
             _console.WriteLine($"[red]Error:[/] {message}");
+        }
+        public void RenderWarning(string message)
+        {
+            _console.WriteLine($"[yellow]Warning:[/] {message}");
+
+        }
+        public void RenderInfo(string message)
+        {
+            _console.WriteLine(message);
         }
 
         private static string FormatFilePath(string path)
