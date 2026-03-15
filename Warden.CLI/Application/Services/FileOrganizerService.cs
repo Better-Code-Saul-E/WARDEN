@@ -80,7 +80,7 @@ namespace Warden.CLI.Application.Services
             {
                 if (!projectedFileName.Equals(file.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    dto.Action = $"Will Move and Rename to ${projectedFileName}";
+                    dto.Action = $"Will Move and Rename to {projectedFileName}";
                 }
                 else
                 {
