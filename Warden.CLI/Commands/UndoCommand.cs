@@ -36,7 +36,7 @@ namespace Warden.CLI.Commands
                     {
                         var sourceDir = Path.GetDirectoryName(entry.SourcePath);
 
-                        if (!_fileSystem.DirectoryExists(sourceDir))
+                        if (sourceDir != null && !_fileSystem.DirectoryExists(sourceDir))
                         {
                             _fileSystem.CreateDirectory(sourceDir);
                         }
