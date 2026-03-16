@@ -1,8 +1,12 @@
 using System.Threading.Tasks;
+using Moq;
 using Spectre.Console.Cli;
+using Warden.CLI.Application.Interfaces;
 using Warden.CLI.Application.Services;
 using Warden.CLI.Commands;
+using Warden.CLI.Handlers;
 using Warden.CLI.Infrastructure.FileSystem;
+using Warden.CLI.Output;
 using Xunit;
 
 namespace Warden.CLI.Tests.Commands
@@ -28,12 +32,19 @@ namespace Warden.CLI.Tests.Commands
         }
 
         [Fact]
-        [Trait("Category", "Unit")]
+        [Trait("Category", "integration")]
         public async Task ExecuteAsync_FilesAddedToWatchFolder_MovesFilesToTarget()
         {
             var fileSystem = new PhysicalFileSystem();
             var service = new FileOrganizerService(fileSystem);
-            var command = new WatchCommand(service);
+
+            var mockAudit = new Mock<IAuditService>();
+            var mockConsole = new Mock<IConsole>();
+            var formatter = new ConsoleFormatter(mockConsole.Object);
+
+            var handler = new OrganizeCommandHandler(service, mockAudit.Object, formatter);
+
+            var command = new WatchCommand(handler, formatter);
 
             var settings = new SortSettings
             {

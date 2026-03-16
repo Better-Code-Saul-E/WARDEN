@@ -40,7 +40,7 @@ namespace Warden.CLI.Tests
             mockService.Setup(s => s.Organize(
                 It.IsAny<string>(),
                 false,
-                It.IsAny<string[]>()))
+                It.IsAny<List<ISortRule>>()))
                 .Returns(fakeReport);
 
             var handler = new OrganizeCommandHandler(mockService.Object, mockAudit.Object, formatter);

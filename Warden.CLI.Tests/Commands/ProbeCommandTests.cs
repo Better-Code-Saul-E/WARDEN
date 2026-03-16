@@ -50,7 +50,7 @@ namespace Warden.CLI.Tests.Commands
             mockService.Setup(s => s.Organize(
                 It.IsAny<string>(),
                 true,
-                It.IsAny<string[]>())
+                It.IsAny<List<ISortRule>>())
             ).Returns(fakeReport);
 
             var formatter = new ConsoleFormatter(mockConsole.Object);
@@ -68,7 +68,7 @@ namespace Warden.CLI.Tests.Commands
             mockService.Verify(s => s.Organize(
                 It.IsAny<string>(),
                 true,
-                It.IsAny<string[]>())
+                It.IsAny<List<ISortRule>>())
             , Times.Once);
         }
 
