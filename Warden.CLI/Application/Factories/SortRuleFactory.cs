@@ -18,5 +18,26 @@ namespace Warden.CLI.Application.Factories
                 _ => null
             };
         }
+        public static List<ISortRule> CreateRules(string[] ruleNames)
+        {
+            var rules = new List<ISortRule>();
+
+            foreach (var ruleName in ruleNames)
+            {
+                var rule = Create(ruleName);
+
+                if (rule != null)
+                {
+                    rules.Add(rule);
+                }
+            }
+
+            if (!rules.Any())
+            {
+                rules.Add(new CategorySortRule());
+            }
+
+            return rules;
+        }
     }
 }

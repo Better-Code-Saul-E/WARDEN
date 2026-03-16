@@ -14,22 +14,11 @@ namespace Warden.CLI.Application.Services
             _fileSystem = fileSystem;
         }
 
-        public OrganizeReport Organize(string sourceDirectory, bool isDryRun, string[] orderBy)
+        public OrganizeReport Organize(string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
             if (!_fileSystem.DirectoryExists(sourceDirectory))
             {
                 throw new DirectoryNotFoundException($"The directory '{sourceDirectory}' does not exist.");
-            }
-
-            var rules = new List<ISortRule>();
-            foreach (var ruleName in orderBy)
-            {
-                var rule = SortRuleFactory.Create(ruleName);
-
-                if (rule != null)
-                {
-                    rules.Add(rule);
-                }
             }
 
             var result = new OrganizeReport

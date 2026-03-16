@@ -22,7 +22,10 @@ namespace Warden.CLI.Handlers
         {
             try
             {
-                OrganizeReport result = _organizerService.Organize(sourceDirectory, isDryRun, orderBy);
+                var rules = SortRuleFactory.CreateRules(orderBy);
+                
+                OrganizeReport result = _organizerService.Organize(sourceDirectory, isDryRun, rules);
+                
                 if (!isDryRun)
                 {
                     var BatchId = Guid.NewGuid();
@@ -60,16 +63,7 @@ namespace Warden.CLI.Handlers
 
         public void ProcessSingleFile(FileInfo file, string sourceDirectory, string[] orderBy)
         {
-            var rules = new List<ISortRule>();
-            foreach (var ruleName in orderBy)
-            {
-                var rule = SortRuleFactory.Create(ruleName);
-
-                if (rule != null)
-                {
-                    rules.Add(rule);
-                }
-            }
+            var rules = SortRuleFactory.CreateRules(orderBy);
 
             if (file.Name.StartsWith("."))
             {
