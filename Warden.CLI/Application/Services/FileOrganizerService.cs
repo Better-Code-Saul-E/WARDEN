@@ -14,7 +14,7 @@ namespace Warden.CLI.Application.Services
             _fileSystem = fileSystem;
         }
 
-        public OrganizeReport Organize(string sourceDirectory, bool isDryRun, List<ISortRule> rules)
+        public OrganizeReport OrganizeDirectory(string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
             if (!_fileSystem.DirectoryExists(sourceDirectory))
             {
@@ -28,20 +28,33 @@ namespace Warden.CLI.Application.Services
             };
 
             var files = _fileSystem.GetFiles(sourceDirectory);
-            foreach (var file in files)
-            {  
-                if (file.Name.StartsWith("."))
-                {
-                    continue;
-                }
 
-                var fileResult = ProcessFile(file, sourceDirectory, isDryRun, rules);
+            foreach (var file in files)
+            {
+                var fileResult = OrganizeFile(file, sourceDirectory, isDryRun, rules);
+
                 result.Files.Add(fileResult);
             }
 
             return result;
         }
-        public FileRecord ProcessFile(FileInfo file, string sourceDirectory, bool isDryRun, List<ISortRule> rules)
+        public FileRecord OrganizeFile(FileInfo file, string sourceDirectory, bool isDryRun, List<ISortRule> rules)
+        {
+            if (file.Name.StartsWith("."))
+            {
+                return new FileRecord
+                {
+                    FileName = file.Name,
+                    SourcePath = file.FullName,
+                    DestinationPath = file.FullName, 
+                    Success = false,
+                    Action = "Skipped (Hidden File)"
+                };
+            }
+
+            return ProcessFile(file, sourceDirectory, isDryRun, rules);
+        }
+        private FileRecord ProcessFile(FileInfo file, string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
             var currentPath = sourceDirectory;
             var displayPath = "";

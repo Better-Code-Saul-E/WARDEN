@@ -15,7 +15,7 @@ namespace Warden.CLI.Tests
 
         [Fact]
         [Trait("Category", "Unit")]
-        public void ProcessRequest_SingleFile_LogsEntry()
+        public void ProcessDirectory_SingleFile_LogsEntry()
         {
             var mockService = new Mock<IFileOrganizerService>();
             var mockAudit = new Mock<IAuditService>();
@@ -37,7 +37,7 @@ namespace Warden.CLI.Tests
                 Files = fileList
             };
 
-            mockService.Setup(s => s.Organize(
+            mockService.Setup(s => s.OrganizeDirectory(
                 It.IsAny<string>(),
                 false,
                 It.IsAny<List<ISortRule>>()))
@@ -45,7 +45,7 @@ namespace Warden.CLI.Tests
 
             var handler = new OrganizeCommandHandler(mockService.Object, mockAudit.Object, formatter);
 
-            handler.ProcessRequest("any/path", false, new[] { "category" });
+            handler.ProcessDirectory("any/path", false, new[] { "category" });
 
             mockAudit.Verify(s => 
                 s.AddEntry(It.Is<LogEntry>(log => log.FileName == "test.txt"))

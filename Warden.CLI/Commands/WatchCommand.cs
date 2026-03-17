@@ -26,7 +26,7 @@ namespace Warden.CLI.Commands
             }
 
             _consoleFormatter.RenderInfo($"Performing initial cleanup of {sourcePath}...");
-            var exitCode = _commandHandler.ProcessRequest(sourcePath, false, settings.OrderBy);
+            var exitCode = _commandHandler.ProcessDirectory(sourcePath, false, settings.OrderBy);
 
             if (exitCode != Domain.Enums.ExitCode.Success)
             {

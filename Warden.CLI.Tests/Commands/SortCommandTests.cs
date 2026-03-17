@@ -32,7 +32,7 @@ namespace Warden.CLI.Tests.Commands
 
         [Fact]
         [Trait("Category", "Unit")]
-        public void Execute_DefaultSettings_CallsOrganizeWithDryRunFalse()
+        public void Execute_DefaultSettings_CallsOrganizeDirectoryWithDryRunFalse()
         {
 
             var mockService = new Mock<IFileOrganizerService>();
@@ -47,7 +47,7 @@ namespace Warden.CLI.Tests.Commands
                 Files = new List<FileRecord>()
             };
 
-            mockService.Setup(s => s.Organize(
+            mockService.Setup(s => s.OrganizeDirectory(
                 It.IsAny<string>(),
                 false,
                 It.IsAny<List<ISortRule>>())
@@ -65,7 +65,7 @@ namespace Warden.CLI.Tests.Commands
 
             command.Execute(null!, settings, CancellationToken.None);
 
-            mockService.Verify(s => s.Organize(
+            mockService.Verify(s => s.OrganizeDirectory(
                 It.IsAny<string>(),
                 false,
                 It.IsAny<List<ISortRule>>())

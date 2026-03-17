@@ -18,13 +18,13 @@ namespace Warden.CLI.Handlers
             _consoleFormatter = consoleFormatter;
         }
 
-        public ExitCode ProcessRequest(string sourceDirectory, bool isDryRun, string[] orderBy)
+        public ExitCode ProcessDirectory(string sourceDirectory, bool isDryRun, string[] orderBy)
         {
             try
             {
                 var rules = SortRuleFactory.CreateRules(orderBy);
                 
-                OrganizeReport result = _organizerService.Organize(sourceDirectory, isDryRun, rules);
+                OrganizeReport result = _organizerService.OrganizeDirectory(sourceDirectory, isDryRun, rules);
                 
                 if (!isDryRun)
                 {
@@ -65,12 +65,7 @@ namespace Warden.CLI.Handlers
         {
             var rules = SortRuleFactory.CreateRules(orderBy);
 
-            if (file.Name.StartsWith("."))
-            {
-                return;
-            }
-
-            var fileRecord = _organizerService.ProcessFile(file, sourceDirectory, false, rules);
+            var fileRecord = _organizerService.OrganizeFile(file, sourceDirectory, false, rules);
 
             if (fileRecord.Success)
             {
