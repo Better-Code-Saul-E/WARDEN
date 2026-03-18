@@ -17,13 +17,13 @@ namespace Warden.CLI.Output
         {
             if (logs == null || logs.Count == 0)
             {
-                _console.WriteLine("[yellow]No audit logs found.[/]");
+                RenderInfo("No audit logs found.");
                 return;
             }
 
             var table = new Table();
             table.Border(TableBorder.Rounded);
-            table.Title($"[blue]Audit Log (Last {logs.Count})[/]");
+            table.Title($"Audit Log (Last {logs.Count})");
 
             table.AddColumn("Time");
             table.AddColumn("Action");
@@ -37,18 +37,40 @@ namespace Warden.CLI.Output
 
                 table.AddRow(
                     log.TimeStamp.ToString("g"),
-                    $"[{actionColor}]{Markup.Escape(log.Action)}[/]",
-                    Markup.Escape(log.FileName),
-                    $"[blue]{Markup.Escape(log.SourcePath)}[/]",
-                    $"[blue]{Markup.Escape(log.DestinationPath)}[/]"
+                    FormatAction(log.Action),
+                    log.FileName,
+                    FormatFilePath(log.SourcePath),
+                    FormatFilePath(log.DestinationPath)
                 );
             }
 
             _console.Write(table);
         }
-        public void RenderError(string message)
+        public void RenderError(string action, string message)
         {
-            _console.WriteLine($"[red]Error:[/] {message}");
+            _console.WriteLine($"[red]Error[/] {action}: \"{message}\"");
+        }
+        public void RenderInfo(string message)
+        {
+            _console.WriteLine(message);
+        }
+
+        private static string FormatFilePath(string path)
+        {
+            return $"[cyan]{path}[/]";
+        }
+        private static string FormatAction(string action)
+        {
+            if (action.Contains("Error", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"[red]{action}[/]";
+            }
+            if (action.StartsWith("Will", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"[darkorange]{action}[/]";
+            }
+
+            return $"[green]{action}[/]";
         }
     }
 }

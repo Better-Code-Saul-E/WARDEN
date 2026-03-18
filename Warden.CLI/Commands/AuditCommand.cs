@@ -25,16 +25,16 @@ namespace Warden.CLI.Commands
 
                 if (logEntries.Count == 0)
                 {
-                    _formatter.RenderError("[yellow]No audit logs found.[/]");
-                    return (int)ExitCode.Success;
+                    _formatter.RenderInfo("No audit logs found.");
                 }
 
                 _formatter.RenderTable(logEntries);
 
                 return (int)ExitCode.Success;
             }
-            catch
+            catch (Exception ex)
             {
+                _formatter.RenderError("fetching audit logs", ex.Message);
                 return (int)ExitCode.UnhandledError;
             }
         }

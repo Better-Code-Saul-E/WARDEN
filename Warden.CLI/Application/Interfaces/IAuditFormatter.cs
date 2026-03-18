@@ -5,6 +5,7 @@ namespace Warden.CLI.Application.Interfaces
     public interface IAuditFormatter
     {
         void RenderTable(List<LogEntry> logs);
-        void RenderError(string message);
+        void RenderError(string action, string message);
+        void RenderInfo(string message);
     }
 }
