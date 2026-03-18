@@ -16,7 +16,7 @@ namespace Warden.CLI.Tests.Commands
         {
             var mockService = new Mock<IAuditService>();
             var mockFileSystem = new Mock<IFileSystem>();
-            var mockConsole = new Mock<IConsole>();
+            var mockConsole = new Mock<IConsoleFormatter>();
 
             List<LogEntry> entryList = new List<LogEntry>
             {
@@ -32,7 +32,7 @@ namespace Warden.CLI.Tests.Commands
             mockFileSystem.Setup(s => s.FileExists(
                 "moved.txt"
             )).Returns(true);
-            mockConsole.Setup(c => c.WriteLine(It.IsAny<string>()));
+            mockConsole.Setup(c => c.RenderInfo(It.IsAny<string>()));
 
             var command = new UndoCommand(mockService.Object, mockFileSystem.Object, mockConsole.Object);
 
@@ -48,8 +48,8 @@ namespace Warden.CLI.Tests.Commands
                 "original.txt"
             ), Times.Once);
 
-            mockConsole.Verify(c => c.WriteLine(
-                "Restored: test.txt"
+            mockConsole.Verify(c => c.RenderInfo(
+                "Restored 'test.txt'"
             ), Times.Once);
         }
 
@@ -59,7 +59,7 @@ namespace Warden.CLI.Tests.Commands
         {
             var mockService = new Mock<IAuditService>();
             var mockFileSystem = new Mock<IFileSystem>();
-            var mockConsole = new Mock<IConsole>();
+            var mockConsole = new Mock<IConsoleFormatter>();
 
             List<LogEntry> entryList = new List<LogEntry>
             {
@@ -75,7 +75,6 @@ namespace Warden.CLI.Tests.Commands
             mockFileSystem.Setup(s => s.FileExists(
                 "moved.txt"
             )).Returns(false);
-            mockConsole.Setup(c => c.WriteLine(It.IsAny<string>()));
 
             var command = new UndoCommand(mockService.Object, mockFileSystem.Object, mockConsole.Object);
 
@@ -91,8 +90,9 @@ namespace Warden.CLI.Tests.Commands
                 "original.txt"
             ), Times.Never);
 
-            mockConsole.Verify(c => c.WriteLine(
-                It.Is<string>(s => s.Contains("Skipping"))
+            mockConsole.Verify(c => c.RenderWarning(
+                It.Is<string>(s => s.Contains("skipping")),
+                It.IsAny<string>()
             ), Times.Once);
         }
     }
