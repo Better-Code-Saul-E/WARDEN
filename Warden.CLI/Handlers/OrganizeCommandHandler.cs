@@ -51,12 +51,12 @@ namespace Warden.CLI.Handlers
             }
             catch (DirectoryNotFoundException ex)
             {
-                _consoleFormatter.RenderError($"Directory not found: {ex.Message}");
+                _consoleFormatter.RenderError("finding directory", ex.Message);
                 return ExitCode.InvalidPath;
             }
             catch (Exception ex)
             {
-                _consoleFormatter.RenderError($"Unexpected error: {ex.Message}");
+                _consoleFormatter.RenderError("during execution", ex.Message);
                 return ExitCode.UnhandledError;
             }
         }

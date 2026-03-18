@@ -7,13 +7,13 @@ namespace Warden.CLI.Commands
     {
         private readonly IAuditService _auditService;
         private readonly IFileSystem _fileSystem;
-        private readonly IConsole _console;
+        private readonly IConsoleFormatter _consoleFormatter;
 
-        public UndoCommand(IAuditService auditService, IFileSystem fileSystem, IConsole console)
+        public UndoCommand(IAuditService auditService, IFileSystem fileSystem, IConsoleFormatter consoleFormatter)
         {
             _auditService = auditService;
             _fileSystem = fileSystem;
-            _console = console;
+            _consoleFormatter = consoleFormatter;
         }
 
         public override int Execute(CommandContext context, UndoSettings settings, CancellationToken cancellationToken)
@@ -22,11 +22,11 @@ namespace Warden.CLI.Commands
 
             if (lastBatch.Count == 0)
             {
-                _console.WriteLine("No recent operatiosn found to undo");
+                _consoleFormatter.RenderInfo("No recent operations found to undo");
                 return 0;
             }
 
-            _console.WriteLine($"Found {lastBatch.Count} files from the last run. Undoing...");
+            _consoleFormatter.RenderInfo($"Found {lastBatch.Count} files from the last run. Undoing...");
 
             foreach (var entry in lastBatch)
             {
@@ -42,20 +42,20 @@ namespace Warden.CLI.Commands
                         }
 
                         _fileSystem.MoveFile(entry.DestinationPath, entry.SourcePath);
-                        _console.WriteLine($"Restored: {entry.FileName}");
+                        _consoleFormatter.RenderInfo($"Restored '{entry.FileName}'");
                     }
                     catch (Exception ex)
                     {
-                        _console.WriteLine($"[Red]Error restoring {entry.FileName}: {ex.Message}[/]");
+                        _consoleFormatter.RenderError($"restoring '{entry.FileName}'", ex.Message);
                     }
                 }
                 else
                 {
-                    _console.WriteLine($"[Yellow]Skipping {entry.FileName}: File no longer exists at {entry.DestinationPath}[/]");
+                    _consoleFormatter.RenderWarning($"skipping '{entry.FileName}'", $"No longer exists at '{entry.DestinationPath}'");
                 }
             }
 
-            _console.WriteLine("[Green]Undo Complete![/]");
+            _consoleFormatter.RenderSuccess("Undo completed successfully!");
             return 0;
         }
     }

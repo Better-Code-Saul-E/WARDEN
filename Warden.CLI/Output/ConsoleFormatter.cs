@@ -66,14 +66,18 @@ namespace Warden.CLI.Output
         {
             _console.WriteLine($"{action} [yellow]{key}[/] {context}");
         }
-        public void RenderError(string message)
+        public void RenderError(string action, string message)
         {
-            _console.WriteLine($"[red]Error:[/] {message}");
+            _console.WriteLine($"[red]Error[/] {action}: \"{message}\"");
         }
-        public void RenderWarning(string message)
+        public void RenderWarning(string action, string message)
         {
-            _console.WriteLine($"[yellow]Warning:[/] {message}");
+            _console.WriteLine($"[yellow]Warning[/] {action}: {message}");
 
+        }
+        public void RenderSuccess(string message)
+        {
+            _console.WriteLine($"[green]{message}[/]");
         }
         public void RenderInfo(string message)
         {

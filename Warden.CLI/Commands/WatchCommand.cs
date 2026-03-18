@@ -21,11 +21,11 @@ namespace Warden.CLI.Commands
 
             if (!Directory.Exists(sourcePath))
             {
-                _consoleFormatter.RenderError($"Directory '{sourcePath}' not found.");
+                _consoleFormatter.RenderError("validating path", $"Directory '{sourcePath}' not found.");
                 return 1;
             }
 
-            _consoleFormatter.RenderInfo($"Performing initial cleanup of {sourcePath}...");
+            _consoleFormatter.RenderInfo($"Performing initial cleanup of '{sourcePath}'...");
             var exitCode = _commandHandler.ProcessDirectory(sourcePath, false, settings.OrderBy);
 
             if (exitCode != Domain.Enums.ExitCode.Success)
@@ -69,11 +69,11 @@ namespace Warden.CLI.Commands
                 }
                 catch (IOException)
                 {
-                    _consoleFormatter.RenderWarning($"Skipped (File in use) '{e.Name}'");
+                    _consoleFormatter.RenderWarning("checking lock", $"File in use: '{e.Name}'");
                 }
                 catch (Exception ex)
                 {
-                    _consoleFormatter.RenderError($"Error processing file '{ex.Message}'");
+                    _consoleFormatter.RenderError($"processing '{e.Name}'", ex.Message);
                 }
 
             };

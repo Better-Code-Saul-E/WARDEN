@@ -10,8 +10,9 @@ namespace Warden.CLI.Application.Interfaces
         void RenderTitle(string title, string path);
         void RenderInstruction(string action, string key, string context);
 
-        void RenderError(string message);
-        void RenderWarning(string message);
+        void RenderError(string action, string message);
+        void RenderWarning(string action, string message);
+        void RenderSuccess(string message);
         void RenderInfo(string message);
     }
 }
