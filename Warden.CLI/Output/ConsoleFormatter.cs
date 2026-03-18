@@ -37,34 +37,36 @@ namespace Warden.CLI.Output
 
             if (result.IsDryRun)
             {
-                _console.WriteLine("\n[yellow]Dry run. no files were moved.[/]");
+                RenderWarning("dry run", "No files were moved.");
             }
             else
             {
-                _console.WriteLine($"\n[green]Done. Processed {result.Files.Count} files.[/]");
+                RenderSuccess($"Done. Processed {result.Files.Count} files.");
             }
         }
         public void RenderSingleEvent(FileRecord file)
         {
-            var coloredAction = FormatAction(file);
-            var coloredFile = FormatFilePath(file.FileName);
+            var action = FormatAction(file);
+            var path = FormatFilePath(file.FileName);
+
+            var indent = "\t";
 
             if (file.Success)
             {
-                _console.WriteLine($"   [green]->[/] {coloredAction}: {coloredFile}");
+                RenderInfo($"{indent}-> {action}: {path}");
             }
             else
             {
-                _console.WriteLine($"   [red]X[/] {coloredAction}: {coloredFile}");
+                RenderInfo($"{indent}X  {action}: {path}");
             }
         }
         public void RenderTitle(string title, string path)
         {
-            _console.WriteLine($"\n[green]{title}:[/] [blue]{path}[/]\n");
+            _console.WriteLine($"\n[magenta]{title}:[/] {FormatFilePath(path)}\n");
         }
         public void RenderInstruction(string action, string key, string context)
         {
-            _console.WriteLine($"{action} [yellow]{key}[/] {context}");
+            _console.WriteLine($"{action} [yellow]{key}[/] [grey]{context}[/]");
         }
         public void RenderError(string action, string message)
         {
@@ -72,7 +74,7 @@ namespace Warden.CLI.Output
         }
         public void RenderWarning(string action, string message)
         {
-            _console.WriteLine($"[yellow]Warning[/] {action}: {message}");
+            _console.WriteLine($"[darkorange]Warning[/] {action}: {message}");
 
         }
         public void RenderSuccess(string message)
@@ -86,7 +88,7 @@ namespace Warden.CLI.Output
 
         private static string FormatFilePath(string path)
         {
-            return $"[blue]{path}[/]";
+            return $"[cyan]{path}[/]";
         }
         private static string FormatAction(FileRecord file)
         {
@@ -96,7 +98,7 @@ namespace Warden.CLI.Output
             }
             else if (file.Action.StartsWith("Will"))
             {
-                return $"[yellow]{file.Action}[/]";
+                return $"[darkorange]{file.Action}[/]";
             }
 
             return $"[green]{file.Action}[/]";
