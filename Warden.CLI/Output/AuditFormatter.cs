@@ -12,12 +12,6 @@ namespace Warden.CLI.Output
 
         public void RenderTable(List<LogEntry> logs)
         {
-            if (logs == null || logs.Count == 0)
-            {
-                RenderInfo("No audit logs found.");
-                return;
-            }
-
             var table = new Table();
             table.Border(TableBorder.Rounded);
             table.Title($"Audit Log (Last {logs.Count})");
