@@ -4,13 +4,10 @@ using Warden.CLI.Application.Interfaces;
 
 namespace Warden.CLI.Output
 {
-    public class AuditFormatter : IAuditFormatter
+    public class AuditFormatter : BaseFormatter, IAuditFormatter
     {
-        private readonly IConsole _console;
-
-        public AuditFormatter(IConsole console)
+        public AuditFormatter(IConsole console) : base(console)
         {
-            _console = console;
         }
 
         public void RenderTable(List<LogEntry> logs)
@@ -45,32 +42,6 @@ namespace Warden.CLI.Output
             }
 
             _console.Write(table);
-        }
-        public void RenderError(string action, string message)
-        {
-            _console.WriteLine($"[red]Error[/] {action}: \"{message}\"");
-        }
-        public void RenderInfo(string message)
-        {
-            _console.WriteLine(message);
-        }
-
-        private static string FormatFilePath(string path)
-        {
-            return $"[cyan]{path}[/]";
-        }
-        private static string FormatAction(string action)
-        {
-            if (action.Contains("Error", StringComparison.OrdinalIgnoreCase))
-            {
-                return $"[red]{action}[/]";
-            }
-            if (action.StartsWith("Will", StringComparison.OrdinalIgnoreCase))
-            {
-                return $"[darkorange]{action}[/]";
-            }
-
-            return $"[green]{action}[/]";
         }
     }
 }

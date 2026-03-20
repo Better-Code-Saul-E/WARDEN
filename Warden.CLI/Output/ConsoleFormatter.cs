@@ -4,13 +4,10 @@ using Warden.CLI.Application.Interfaces;
 
 namespace Warden.CLI.Output
 {
-    public class ConsoleFormatter : IConsoleFormatter
+    public class ConsoleFormatter : BaseFormatter, IConsoleFormatter
     {
-        private readonly IConsole _console;
-
-        public ConsoleFormatter(IConsole console)
+        public ConsoleFormatter(IConsole console) : base(console)
         {
-            _console = console;
         }
 
         public void Render(OrganizeReport result)
@@ -28,7 +25,7 @@ namespace Warden.CLI.Output
                 table.AddRow(
                     file.FileName,
                     FormatFilePath(file.SourcePath),
-                    FormatAction(file),
+                    FormatAction(file.Action),
                     FormatFilePath(file.DestinationPath)
                 );
             }
@@ -46,7 +43,7 @@ namespace Warden.CLI.Output
         }
         public void RenderSingleEvent(FileRecord file)
         {
-            var action = FormatAction(file);
+            var action = FormatAction(file.Action);
             var path = FormatFilePath(file.FileName);
 
             var indent = "\t";
@@ -62,46 +59,12 @@ namespace Warden.CLI.Output
         }
         public void RenderTitle(string title, string path)
         {
-            _console.WriteLine($"\n[magenta]{title}:[/] {FormatFilePath(path)}\n");
+            RenderInfo($"\n[magenta]{title}:[/] {FormatFilePath(path)}\n");
         }
+
         public void RenderInstruction(string action, string key, string context)
         {
-            _console.WriteLine($"{action} [yellow]{key}[/] [grey]{context}[/]");
-        }
-        public void RenderError(string action, string message)
-        {
-            _console.WriteLine($"[red]Error[/] {action}: \"{message}\"");
-        }
-        public void RenderWarning(string action, string message)
-        {
-            _console.WriteLine($"[darkorange]Warning[/] {action}: {message}");
-
-        }
-        public void RenderSuccess(string message)
-        {
-            _console.WriteLine($"[green]{message}[/]");
-        }
-        public void RenderInfo(string message)
-        {
-            _console.WriteLine(message);
-        }
-
-        private static string FormatFilePath(string path)
-        {
-            return $"[cyan]{path}[/]";
-        }
-        private static string FormatAction(FileRecord file)
-        {
-            if (!file.Success)
-            {
-                return $"[red]{file.Action}[/]";
-            }
-            else if (file.Action.StartsWith("Will"))
-            {
-                return $"[darkorange]{file.Action}[/]";
-            }
-
-            return $"[green]{file.Action}[/]";
+            RenderInfo($"{action} [yellow]{key}[/] [grey]{context}[/]");
         }
     }
 }
