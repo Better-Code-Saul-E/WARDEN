@@ -24,8 +24,6 @@ namespace Warden.CLI.Output
 
             foreach (var log in logs)
             {
-                var actionColor = log.Action.Contains("Error", StringComparison.OrdinalIgnoreCase) ? "red" : "green";
-
                 table.AddRow(
                     log.TimeStamp.ToString("g"),
                     FormatAction(log.Action),
