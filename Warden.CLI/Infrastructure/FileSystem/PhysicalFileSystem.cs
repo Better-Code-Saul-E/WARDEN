@@ -18,10 +18,13 @@ namespace Warden.CLI.Infrastructure.FileSystem
         }
         public FileInfo[] GetFiles(string directoryPath)
         {
+            if (!Directory.Exists(directoryPath))
+            {
+                throw new DirectoryNotFoundException($"The directory '{directoryPath}' does not exist.");
+            }
+            
             var directoryInfo = new DirectoryInfo(directoryPath);
 
-            // if the directory does not exists it might throw an exception
-            // Either make the caller handle the error or implement a try.catch
             return directoryInfo.GetFiles();
         }
         public void MoveFile(string sourcePath, string destinationPath)

@@ -16,11 +16,6 @@ namespace Warden.CLI.Application.Services
 
         public OrganizeReport OrganizeDirectory(string sourceDirectory, bool isDryRun, List<ISortRule> rules)
         {
-            if (!_fileSystem.DirectoryExists(sourceDirectory))
-            {
-                throw new DirectoryNotFoundException($"The directory '{sourceDirectory}' does not exist.");
-            }
-
             var result = new OrganizeReport
             {
                 IsDryRun = isDryRun,
