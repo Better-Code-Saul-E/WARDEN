@@ -19,6 +19,7 @@ namespace Warden.CLI.Output
             table.AddColumn("Time");
             table.AddColumn("Action");
             table.AddColumn("File");
+            table.AddColumn("Rules Applied");
             table.AddColumn("From");
             table.AddColumn("To");
 
@@ -28,6 +29,7 @@ namespace Warden.CLI.Output
                     log.TimeStamp.ToString("g"),
                     FormatAction(log.Action),
                     log.FileName,
+                    log.RuleApplied,
                     FormatFilePath(log.SourcePath),
                     FormatFilePath(log.DestinationPath)
                 );
