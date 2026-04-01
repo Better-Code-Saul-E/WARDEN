@@ -8,13 +8,13 @@ namespace Warden.CLI.Handlers
     public class OrganizeCommandHandler
     {
         private readonly IFileOrganizerService _organizerService;
-        private readonly IAuditService _auditSerivce;
+        private readonly IAuditService _auditService;
         private readonly IConsoleFormatter _consoleFormatter;
 
         public OrganizeCommandHandler(IFileOrganizerService organizerService, IAuditService auditService, IConsoleFormatter consoleFormatter)
         {
             _organizerService = organizerService;
-            _auditSerivce = auditService;
+            _auditService = auditService;
             _consoleFormatter = consoleFormatter;
         }
 
@@ -42,7 +42,7 @@ namespace Warden.CLI.Handlers
                             RuleApplied = string.Join(", ", orderBy),
                             Action = fileRecord.Action,
                         };
-                        _auditSerivce.AddEntry(log);
+                        _auditService.AddEntry(log);
                     }
                 }
 
@@ -80,7 +80,7 @@ namespace Warden.CLI.Handlers
                     Action = fileRecord.Action,
                 };
 
-                _auditSerivce.AddEntry(log);
+                _auditService.AddEntry(log);
             }
 
             _consoleFormatter.RenderSingleEvent(fileRecord);
