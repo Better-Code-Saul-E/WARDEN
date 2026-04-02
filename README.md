@@ -46,7 +46,7 @@ Warden uses intuitive verbs to manage your files. Here are the core commands:
 
 | Command | Description |
 | :--- | :--- |
-| `probe [path]` | Visualize the file organization without moving files. |
+| `probe [path]` | Acts as a **dry run**. Safely visualizes how files will be organized without actually moving them. Takes all the same flags as `sort`. |
 | `sort [path]` | Organize files in the target directory into subfolders. **Defaults to sorting by category** (e.g., `/Images`, `/Docs`). |
 | `undo` | **Reverses the last operation.** Moves files back to their original locations. |
 | `undo --force` | Reverses the last operation but skips files that are missing/deleted without crashing. |
