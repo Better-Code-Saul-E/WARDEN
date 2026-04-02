@@ -19,7 +19,7 @@ namespace Warden.CLI.Tests.Domain.Rules
                 File.Delete(_tempFile);
             }
         }
-        
+
         private FileInfo GetFileWithMonth(int year, int month, int day)
         {
             var date = new DateTime(year, month, day);
@@ -41,28 +41,17 @@ namespace Warden.CLI.Tests.Domain.Rules
             Assert.Equal("2025", result);
         }
 
-        [Fact]
-        public void GetSubFolderName_FutureDate_ThrowsInvalidOperationException()
+        [Theory]
+        [InlineData(3000, 1, 1)]
+        [InlineData(1699, 1, 1)]
+        public void GetSubFolderName_OutOfBoundsDate_ReturnsUnknown(int year, int month, int day)
         {
             var rule = new YearSortRule();
-            var futureDate = DateTime.Now.AddYears(100);
+            var file = GetFileWithMonth(year, month, day);
 
-            File.SetLastWriteTime(_tempFile, futureDate);
-            var file = new FileInfo(_tempFile);
+            var result = rule.GetSubFolderName(file);
 
-            var ex = Assert.Throws<InvalidOperationException>(() => rule.GetSubFolderName(file));
-
-            Assert.Equal("File is from the future!", ex.Message);
-        }
-
-        [Fact]
-        public void GetSubFolderName_AncientDate_ThrowsArgumentOutOfRangeException()
-        {
-            var rule = new YearSortRule();
-
-            var file = GetFileWithMonth(1699, 1, 1);
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => rule.GetSubFolderName(file));
+            Assert.Equal("_Unknown", result);
         }
 
         [Fact]
