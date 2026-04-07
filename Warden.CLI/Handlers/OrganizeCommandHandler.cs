@@ -61,7 +61,7 @@ namespace Warden.CLI.Handlers
             }
         }
 
-        public void ProcessSingleFile(FileInfo file, string sourceDirectory, string[] orderBy)
+        public void ProcessSingleFile(FileInfo file, string sourceDirectory, string[] orderBy, Guid batchId)
         {
             var rules = SortRuleFactory.CreateRules(orderBy);
 
@@ -72,7 +72,7 @@ namespace Warden.CLI.Handlers
                 LogEntry log = new LogEntry
                 {
                     TimeStamp = DateTime.Now,
-                    BatchId = Guid.NewGuid(),
+                    BatchId = batchId,
                     FileName = fileRecord.FileName,
                     SourcePath = fileRecord.SourcePath,
                     DestinationPath = fileRecord.DestinationPath,

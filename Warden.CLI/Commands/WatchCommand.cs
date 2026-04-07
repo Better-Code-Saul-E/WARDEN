@@ -36,6 +36,8 @@ namespace Warden.CLI.Commands
             _consoleFormatter.RenderTitle("Warden is watching", sourcePath);
             _consoleFormatter.RenderInstruction("Press", "Ctrl+C", "to stop.");
 
+            var watchSessionBatchId = Guid.NewGuid();
+
             using var watcher = new FileSystemWatcher(sourcePath);
 
             watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime;
@@ -64,7 +66,7 @@ namespace Warden.CLI.Commands
                 try
                 {
                     var fileInfo = new FileInfo(e.FullPath);
-                    _commandHandler.ProcessSingleFile(fileInfo, sourcePath, settings.OrderBy);
+                    _commandHandler.ProcessSingleFile(fileInfo, sourcePath, settings.OrderBy, watchSessionBatchId);
 
                 }
                 catch (IOException)
