@@ -6,6 +6,12 @@ namespace Warden.CLI.Commands
 {
     public class WatchCommand : AsyncCommand<SortSettings>
     {
+        /* 
+        * Delay processing a newly detected file, to ensure the OS has 
+        * finished writing the file to the disk.
+        */
+        private const int FileWriteDelayMs = 1000;
+
         private readonly OrganizeCommandHandler _commandHandler;
         private readonly IConsoleFormatter _consoleFormatter;
 
@@ -49,7 +55,7 @@ namespace Warden.CLI.Commands
             {
                 try
                 {
-                    await Task.Delay(1000, cancellationToken);
+                    await Task.Delay(FileWriteDelayMs, cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
