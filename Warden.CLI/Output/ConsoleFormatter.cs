@@ -66,5 +66,18 @@ namespace Warden.CLI.Output
         {
             RenderInfo($"{action} [yellow]{key}[/] [grey]{context}[/]");
         }
+        public bool RenderConfirm(string message, string warning = null)
+        {
+            var prompt = message;
+
+            if (!string.IsNullOrEmpty(warning))
+            {
+                prompt += $"\n[yellow]{warning}[/]";
+            }
+
+            prompt += "\nAre you sure you want to continue?";
+
+            return AnsiConsole.Confirm(prompt);
+        }
     }
 }

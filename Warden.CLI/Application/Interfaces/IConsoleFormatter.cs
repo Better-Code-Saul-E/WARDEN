@@ -14,5 +14,6 @@ namespace Warden.CLI.Application.Interfaces
         void RenderWarning(string action, string message);
         void RenderSuccess(string message);
         void RenderInfo(string message);
+        bool RenderConfirm(string message, string warning);
     }
 }
