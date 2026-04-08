@@ -31,13 +31,32 @@ namespace Warden.CLI.Commands
                 return 1;
             }
 
-            _consoleFormatter.RenderInfo($"Performing initial cleanup of '{sourcePath}'...");
-            var exitCode = _commandHandler.ProcessDirectory(sourcePath, false, settings.OrderBy);
-
-            if (exitCode != Domain.Enums.ExitCode.Success)
+            var filesInDirectory = Directory.GetFiles(sourcePath).Length;
+            if (filesInDirectory > 0)
             {
-                return (int)exitCode;
+                var proceed = _consoleFormatter.RenderConfirm(
+                    $"You are about to sort '{sourcePath}'.",
+                    "Please ensure all files are SAVED and CLOSED."
+                    );
+
+                if (proceed)
+                {
+                    _consoleFormatter.RenderInfo($"Performing initial cleanup of '{sourcePath}'...");
+                    var exitCode = _commandHandler.ProcessDirectory(sourcePath, false, settings.OrderBy);
+
+                    if (exitCode != Domain.Enums.ExitCode.Success)
+                    {
+                        return (int)exitCode;
+                    }
+                }
+                else
+                {
+                    _consoleFormatter.RenderInfo("Skipping initial cleanup. Existing files will remain in place.");
+                    return 0;
+                }
+
             }
+
 
             _consoleFormatter.RenderTitle("Warden is watching", sourcePath);
             _consoleFormatter.RenderInstruction("Press", "Ctrl+C", "to stop.");
