@@ -1,5 +1,6 @@
 using Spectre.Console.Cli;
 using Warden.CLI.Application.Interfaces;
+using Warden.CLI.Domain.Enums;
 
 namespace Warden.CLI.Commands
 {
@@ -24,6 +25,21 @@ namespace Warden.CLI.Commands
             {
                 _consoleFormatter.RenderInfo("No recent operations found to undo");
                 return 0;
+            }
+
+            if (!settings.Force)
+            {
+                var missingFiles = lastBatch.Where(entry => !_fileSystem.FileExists(entry.DestinationPath)).ToList();
+
+                if (missingFiles.Any())
+                {
+                    _consoleFormatter.RenderError(
+                        "Undo aborted",
+                        $"Found {missingFiles.Count} missing file(s). For example, '{missingFiles.First().FileName}' is no longer at its destination.\n" +
+                        "Run 'warden undo --force' to ignore missing files and undo the rest."
+                    );
+                    return 0;
+                }
             }
 
             _consoleFormatter.RenderInfo($"Found {lastBatch.Count} files from the last run. Undoing...");
