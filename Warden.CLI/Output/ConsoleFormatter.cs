@@ -66,7 +66,7 @@ namespace Warden.CLI.Output
         {
             RenderInfo($"{action} [yellow]{key}[/] [grey]{context}[/]");
         }
-        public bool RenderConfirm(string message, string warning = null)
+        public bool RenderConfirm(string message, string? warning = null)
         {
             var prompt = message;
 
