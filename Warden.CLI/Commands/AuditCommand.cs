@@ -26,6 +26,7 @@ namespace Warden.CLI.Commands
                 if (logEntries.Count == 0)
                 {
                     _formatter.RenderInfo("No audit logs found.");
+                    return (int)ExitCode.Success;
                 }
 
                 _formatter.RenderTable(logEntries);
