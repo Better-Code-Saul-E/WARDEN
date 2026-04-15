@@ -26,9 +26,9 @@ namespace Warden.CLI.Application.Factories
             {
                 var rule = Create(ruleName);
 
-                if (rule != null)
+                if (rule == null)
                 {
-                    rules.Add(rule);
+                    throw new ArgumentException($"Unrecognized sort rule '{ruleName}'. Valid rules are: year, category, extension, month, size, alphabetical.");
                 }
             }
 
