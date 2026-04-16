@@ -24,7 +24,7 @@ namespace Warden.CLI.Commands
             if (lastBatch.Count == 0)
             {
                 _consoleFormatter.RenderInfo("No recent operations found to undo");
-                return 0;
+                return (int)ExitCode.NothingToDo;
             }
 
             if (!settings.Force)
@@ -38,11 +38,14 @@ namespace Warden.CLI.Commands
                         $"Found {missingFiles.Count} missing file(s). For example, '{missingFiles.First().FileName}' is no longer at its destination.\n" +
                         "Run 'warden undo --force' to ignore missing files and undo the rest."
                     );
-                    return 0;
+                    return (int)ExitCode.FileNotFound;
                 }
             }
 
             _consoleFormatter.RenderInfo($"Found {lastBatch.Count} files from the last run. Undoing...");
+
+            int restoredCount = 0;
+            int failedCount = 0;
 
             foreach (var entry in lastBatch)
             {
@@ -59,20 +62,37 @@ namespace Warden.CLI.Commands
 
                         _fileSystem.MoveFile(entry.DestinationPath, entry.SourcePath);
                         _consoleFormatter.RenderInfo($"Restored '{entry.FileName}'");
+                        restoredCount++;
                     }
                     catch (Exception ex)
                     {
-                        _consoleFormatter.RenderError($"restoring '{entry.FileName}'", ex.Message);
+                        _consoleFormatter.RenderError($"attempting to restore '{entry.FileName}'", ex.Message);
+                        failedCount++;
                     }
                 }
                 else
                 {
                     _consoleFormatter.RenderWarning($"skipping '{entry.FileName}'", $"No longer exists at '{entry.DestinationPath}'");
+                    failedCount++;
+                }
+            }
+
+            if (failedCount > 0)
+            {
+                if (restoredCount == 0)
+                {
+                    _consoleFormatter.RenderError("Undo Failed", "Could not restore any files.");
+                    return (int)ExitCode.UnhandledError;
+                }
+                else
+                {
+                    _consoleFormatter.RenderWarning("Undo Partially Completed", $"Successfully restored {restoredCount} file(s), but {failedCount} failed.");
+                    return (int)ExitCode.PartialSuccess;
                 }
             }
 
             _consoleFormatter.RenderSuccess("Undo completed successfully!");
-            return 0;
+            return (int)ExitCode.Success;
         }
     }
 }

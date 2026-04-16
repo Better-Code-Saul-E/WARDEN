@@ -1,5 +1,6 @@
 using Spectre.Console.Cli;
 using Warden.CLI.Application.Interfaces;
+using Warden.CLI.Domain.Enums;
 using Warden.CLI.Handlers;
 
 namespace Warden.CLI.Commands
@@ -28,7 +29,7 @@ namespace Warden.CLI.Commands
             if (!Directory.Exists(sourcePath))
             {
                 _consoleFormatter.RenderError("validating path", $"Directory '{sourcePath}' not found.");
-                return 1;
+                return (int)ExitCode.InvalidPath;
             }
 
             var filesInDirectory = Directory.GetFiles(sourcePath).Length;
@@ -44,7 +45,7 @@ namespace Warden.CLI.Commands
                     _consoleFormatter.RenderInfo($"Performing initial cleanup of '{sourcePath}'...");
                     var exitCode = _commandHandler.ProcessDirectory(sourcePath, false, settings.OrderBy);
 
-                    if (exitCode != Domain.Enums.ExitCode.Success)
+                    if (exitCode != ExitCode.Success)
                     {
                         return (int)exitCode;
                     }
@@ -52,7 +53,7 @@ namespace Warden.CLI.Commands
                 else
                 {
                     _consoleFormatter.RenderInfo("Skipping initial cleanup. Existing files will remain in place.");
-                    return 0;
+                    return (int)ExitCode.UserCancelled;
                 }
 
             }
@@ -111,7 +112,7 @@ namespace Warden.CLI.Commands
             }
             catch (TaskCanceledException) { }
 
-            return 0;
+            return (int)ExitCode.Success;
         }
 
     }

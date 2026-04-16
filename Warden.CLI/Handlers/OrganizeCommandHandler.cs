@@ -25,7 +25,7 @@ namespace Warden.CLI.Handlers
                 var rules = SortRuleFactory.CreateRules(orderBy);
                 
                 OrganizeReport result = _organizerService.OrganizeDirectory(sourceDirectory, isDryRun, rules);
-                
+
                 if (!isDryRun)
                 {
                     var BatchId = Guid.NewGuid();
@@ -53,6 +53,11 @@ namespace Warden.CLI.Handlers
             {
                 _consoleFormatter.RenderError("finding directory", ex.Message);
                 return ExitCode.InvalidPath;
+            }
+            catch (ArgumentException ex)
+            {
+                _consoleFormatter.RenderError("validating rules", ex.Message);
+                return ExitCode.InvalidConfiguration;
             }
             catch (Exception ex)
             {
