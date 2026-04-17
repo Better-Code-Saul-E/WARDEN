@@ -28,14 +28,14 @@ namespace Warden.CLI.Handlers
 
                 if (!isDryRun)
                 {
-                    var BatchId = Guid.NewGuid();
+                    var batchId = Guid.NewGuid();
 
                     foreach (var fileRecord in result.Files)
                     {
                         LogEntry log = new LogEntry
                         {
                             TimeStamp = DateTime.Now,
-                            BatchId = BatchId,
+                            BatchId = batchId,
                             FileName = fileRecord.FileName,
                             SourcePath = fileRecord.SourcePath,
                             DestinationPath = fileRecord.DestinationPath,
