@@ -30,9 +30,11 @@ namespace Warden.CLI.Application.Factories
                 {
                     throw new ArgumentException($"Unrecognized sort rule '{ruleName}'. Valid rules are: year, category, extension, month, size, alphabetical.");
                 }
+
+                rules.Add(rule);
             }
 
-            if (!rules.Any())
+            if (rules.Count == 0)
             {
                 rules.Add(new CategorySortRule());
             }
