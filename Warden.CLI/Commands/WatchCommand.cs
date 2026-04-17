@@ -15,24 +15,26 @@ namespace Warden.CLI.Commands
 
         private readonly OrganizeCommandHandler _commandHandler;
         private readonly IConsoleFormatter _consoleFormatter;
+        private readonly IFileSystem _fileSystem;
 
-        public WatchCommand(OrganizeCommandHandler commandHandler, IConsoleFormatter consoleFormatter)
+        public WatchCommand(OrganizeCommandHandler commandHandler, IConsoleFormatter consoleFormatter, IFileSystem fileSystem)
         {
             _commandHandler = commandHandler;
             _consoleFormatter = consoleFormatter;
+            _fileSystem = fileSystem;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, SortSettings settings, CancellationToken cancellationToken)
         {
             var sourcePath = Path.GetFullPath(settings.SourcePath);
 
-            if (!Directory.Exists(sourcePath))
+            if (!_fileSystem.DirectoryExists(sourcePath))
             {
                 _consoleFormatter.RenderError("validating path", $"Directory '{sourcePath}' not found.");
                 return (int)ExitCode.InvalidPath;
             }
 
-            var filesInDirectory = Directory.GetFiles(sourcePath).Length;
+            var filesInDirectory = _fileSystem.GetFiles(sourcePath).Length;
             if (filesInDirectory > 0)
             {
                 var proceed = _consoleFormatter.RenderConfirm(
@@ -82,7 +84,7 @@ namespace Warden.CLI.Commands
                     return;
                 }
 
-                if (!File.Exists(e.FullPath))
+                if (!_fileSystem.FileExists(e.FullPath))
                 {
                     return;
                 }
