@@ -131,8 +131,9 @@ namespace Warden.CLI.Application.Services
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
             var extension = Path.GetExtension(fileName);
             var counter = 1;
+            const int maxAttempts = 9999;
 
-            while (true)
+            while (counter <= maxAttempts)
             {
                 var newFileName = $"{fileNameWithoutExtension} ({counter}){extension}";
                 var newFullPath = Path.Combine(folderPath, newFileName);
@@ -144,6 +145,9 @@ namespace Warden.CLI.Application.Services
 
                 counter++;
             }
+
+            var fallbackFileName = $"{fileNameWithoutExtension}_{Guid.NewGuid():N}{extension}";
+            return Path.Combine(folderPath, fallbackFileName);
         }
     }
 }
