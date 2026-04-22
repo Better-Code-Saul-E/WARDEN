@@ -110,11 +110,16 @@ namespace Warden.CLI.Commands
 
             };
 
-            try
+            var tcs = new TaskCompletionSource();
+            Console.CancelKeyPress += (sender, e) =>
             {
-                await Task.Delay(Timeout.Infinite, cancellationToken);
-            }
-            catch (TaskCanceledException) { }
+                e.Cancel = true;
+
+                tcs.TrySetResult();
+            };
+
+            await tcs.Task;
+
             _consoleFormatter.RenderInfo("Stopping watcher...");
             _consoleFormatter.RenderInfo("Cleaning up audit log...");
             _auditService.EnforceBatchLimit();
