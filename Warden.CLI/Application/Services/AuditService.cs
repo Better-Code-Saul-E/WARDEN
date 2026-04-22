@@ -21,10 +21,20 @@ namespace Warden.CLI.Application.Services
             _logFilePath = Path.Combine(logDirectory, "warden_log.json");
         }
 
-        public void AddEntry(LogEntry entry)
+        public void AddFromRecord(FileRecord record, Guid batchId, string[] rulesApplied)
         {
-            string serializedLog = JsonSerializer.Serialize(entry);
-            File.AppendAllText(_logFilePath, serializedLog + Environment.NewLine);
+            LogEntry log = new LogEntry
+            {
+                TimeStamp = DateTime.Now,
+                BatchId = batchId,
+                FileName = record.FileName,
+                SourcePath = record.SourcePath,
+                DestinationPath = record.DestinationPath,
+                RuleApplied = string.Join(", ", rulesApplied),
+                Action = record.Action,
+            };
+
+            AddEntry(log);
         }
         public List<LogEntry> GetRecentLogs(int amount)
         {
@@ -128,7 +138,7 @@ namespace Warden.CLI.Application.Services
 
                     if (!batches.Contains(entry.BatchId))
                     {
-                        if(batches.Count >= 10)
+                        if (batches.Count >= 10)
                         {
                             break;
                         }
@@ -142,6 +152,12 @@ namespace Warden.CLI.Application.Services
 
             entries.Reverse();
             File.WriteAllLines(_logFilePath, entries);
+        }
+
+        private void AddEntry(LogEntry entry)
+        {
+            string serializedLog = JsonSerializer.Serialize(entry);
+            File.AppendAllText(_logFilePath, serializedLog + Environment.NewLine);
         }
     }
 }

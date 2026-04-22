@@ -32,17 +32,8 @@ namespace Warden.CLI.Handlers
 
                     foreach (var fileRecord in result.Files)
                     {
-                        LogEntry log = new LogEntry
-                        {
-                            TimeStamp = DateTime.Now,
-                            BatchId = batchId,
-                            FileName = fileRecord.FileName,
-                            SourcePath = fileRecord.SourcePath,
-                            DestinationPath = fileRecord.DestinationPath,
-                            RuleApplied = string.Join(", ", orderBy),
-                            Action = fileRecord.Action,
-                        };
-                        _auditService.AddEntry(log);
+                        
+                        _auditService.AddFromRecord(fileRecord, batchId, orderBy);
                     }
                 }
 
@@ -76,18 +67,7 @@ namespace Warden.CLI.Handlers
 
             if (fileRecord.Success)
             {
-                LogEntry log = new LogEntry
-                {
-                    TimeStamp = DateTime.Now,
-                    BatchId = batchId,
-                    FileName = fileRecord.FileName,
-                    SourcePath = fileRecord.SourcePath,
-                    DestinationPath = fileRecord.DestinationPath,
-                    RuleApplied = string.Join(", ", orderBy),
-                    Action = fileRecord.Action,
-                };
-
-                _auditService.AddEntry(log);
+                _auditService.AddFromRecord(fileRecord, batchId, orderBy);
             }
 
             _consoleFormatter.RenderSingleEvent(fileRecord);

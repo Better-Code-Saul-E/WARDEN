@@ -4,7 +4,7 @@ namespace Warden.CLI.Application.Interfaces
 {
     public interface IAuditService
     {
-        void AddEntry(LogEntry entry);
+        void AddFromRecord(FileRecord record, Guid batchId, string[] rulesApplied);
         List<LogEntry> GetRecentLogs(int amount);
         List<LogEntry> GetLastBatch();
         void EnforceBatchLimit();
