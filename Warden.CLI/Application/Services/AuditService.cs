@@ -89,15 +89,59 @@ namespace Warden.CLI.Application.Services
                     if (entry.BatchId == currentBatchID)
                     {
                         batch.Add(entry);
-                    } 
+                    }
                     else
                     {
                         break;
                     }
-                } catch (JsonException){}
+                }
+                catch (JsonException) { }
             }
-            
+
             return batch;
+        }
+        public void EnforceBatchLimit()
+        {
+            if (!File.Exists(_logFilePath))
+            {
+                return;
+            }
+
+            List<string> entries = new List<string>();
+            HashSet<Guid> batches = new HashSet<Guid>();
+
+            foreach (var line in File.ReadLines(_logFilePath).Reverse())
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var entry = JsonSerializer.Deserialize<LogEntry>(line);
+
+                    if (entry == null)
+                    {
+                        continue;
+                    }
+
+                    if (!batches.Contains(entry.BatchId))
+                    {
+                        if(batches.Count >= 10)
+                        {
+                            break;
+                        }
+                        batches.Add(entry.BatchId);
+                    }
+
+                    entries.Add(line);
+                }
+                catch (JsonException) { }
+            }
+
+            entries.Reverse();
+            File.WriteAllLines(_logFilePath, entries);
         }
     }
 }

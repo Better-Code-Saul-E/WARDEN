@@ -47,6 +47,8 @@ namespace Warden.CLI.Handlers
                 }
 
                 _consoleFormatter.Render(result);
+
+                _auditService.EnforceBatchLimit();
                 return ExitCode.Success;
             }
             catch (DirectoryNotFoundException ex)

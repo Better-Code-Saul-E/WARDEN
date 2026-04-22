@@ -16,12 +16,14 @@ namespace Warden.CLI.Commands
         private readonly OrganizeCommandHandler _commandHandler;
         private readonly IConsoleFormatter _consoleFormatter;
         private readonly IFileSystem _fileSystem;
+        private readonly IAuditService _auditService;
 
-        public WatchCommand(OrganizeCommandHandler commandHandler, IConsoleFormatter consoleFormatter, IFileSystem fileSystem)
+        public WatchCommand(OrganizeCommandHandler commandHandler, IConsoleFormatter consoleFormatter, IFileSystem fileSystem, IAuditService auditService)
         {
             _commandHandler = commandHandler;
             _consoleFormatter = consoleFormatter;
             _fileSystem = fileSystem;
+            _auditService = auditService;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, SortSettings settings, CancellationToken cancellationToken)
@@ -113,6 +115,9 @@ namespace Warden.CLI.Commands
                 await Task.Delay(Timeout.Infinite, cancellationToken);
             }
             catch (TaskCanceledException) { }
+            _consoleFormatter.RenderInfo("Stopping watcher...");
+            _consoleFormatter.RenderInfo("Cleaning up audit log...");
+            _auditService.EnforceBatchLimit();
 
             return (int)ExitCode.Success;
         }
