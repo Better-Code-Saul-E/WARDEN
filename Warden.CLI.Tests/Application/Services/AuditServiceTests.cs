@@ -12,59 +12,92 @@ namespace Warden.CLI.Tests.Application.Services
         }
 
         [Fact]
-        [Trait("Category", "Integration")]
-        public void GetRecentLogs_PastEntries_ReadsEntries()
+        public void AddFromRecord_WhenCalled_WritesEntryToLog()
         {
-            var service = new AuditService(_testDir);
+            var auditService = new AuditService(_testDir);
 
-            List<LogEntry> originalLogs = new List<LogEntry>
+            List<FileRecord> recordsToBeLogged = new List<FileRecord>
             {
-
-                new LogEntry{ FileName = "fake.txt", Action = "Moved" },
-                new LogEntry{ FileName = "fake.txt (1)", Action = "Moved" }
+                new FileRecord
+                {
+                    FileName = "Family.png",
+                    Action = "Moved",
+                    SourcePath = "Notes/Algebra.doc.",
+                    DestinationPath = "Notes/Images/Algebra.doc",
+                    Success = true
+                },
+                new FileRecord
+                {
+                    FileName = "JBL_Speaker_Manual.pdf",
+                    Action = "Moved",
+                    SourcePath = "Manuals/JBL_Speaker_Manual.pdf",
+                    DestinationPath = "Manuals/Documents/JBL_Speaker_Manual.pdf",
+                    Success = true
+                },
             };
 
-            foreach (var log in originalLogs)
+            Guid guid = new Guid();
+            string[] rulesApplied = { "category" };
+
+            foreach (var fileRecord in recordsToBeLogged)
             {
-                service.AddEntry(log);
+                auditService.AddFromRecord(fileRecord, guid, rulesApplied);
             }
 
-            List<LogEntry> returnedLogs = service.GetRecentLogs(2);
+            var recentLog = auditService.GetRecentLogs(1);
 
-
-            Assert.Equal(originalLogs[1].FileName, returnedLogs[0].FileName);
-            Assert.Equal(originalLogs[1].Action, returnedLogs[0].Action);
-
-            Assert.Equal(originalLogs[0].FileName, returnedLogs[1].FileName);
-            Assert.Equal(originalLogs[0].Action, returnedLogs[1].Action);
-
+            Assert.Equal(recordsToBeLogged[1].FileName, recentLog[0].FileName);
+            Assert.Equal(recordsToBeLogged[1].Action, recentLog[0].Action);
+            Assert.Equal(recordsToBeLogged[1].SourcePath, recentLog[0].SourcePath);
+            Assert.Equal(recordsToBeLogged[1].DestinationPath, recentLog[0].DestinationPath);
         }
 
         [Fact]
-        [Trait("Category", "Integration")]
-        public void GetLastBatch_BatchEntries_ReturnMostRecentBatch()
+        public void AddFromRecord_WhenCalled_CorrectlyJoinsRulesApplied()
         {
-            var service = new AuditService(_testDir);
+            var auditService = new AuditService(_testDir);
 
-            var oldBatchId = Guid.NewGuid();
-            var newBatchId = Guid.NewGuid();
-
-            List<LogEntry> originalLogs = new List<LogEntry>
+            FileRecord recordToBeLogged = new FileRecord
             {
-                new LogEntry{ BatchId=oldBatchId, FileName = "fake.txt", Action = "Moved" },
-                new LogEntry{ BatchId=newBatchId, FileName = "fake.doc", Action = "Moved" },
-                new LogEntry{ BatchId=newBatchId, FileName = "fake.img ", Action = "Moved" }
+                FileName = "JBL_Speaker_Manual.pdf",
+                Action = "Moved",
+                SourcePath = "Manuals/JBL_Speaker_Manual.pdf",
+                DestinationPath = "Manuals/Documents/pdf/2026/JBL_Speaker_Manual.pdf",
+                Success = true
             };
 
-            foreach (var log in originalLogs)
+            Guid guid = new Guid();
+            string[] rulesApplied = { "category", "extension", "year" };
+
+            auditService.AddFromRecord(recordToBeLogged, guid, rulesApplied);
+
+            var recentLog = auditService.GetRecentLogs(1);
+
+            Assert.Equal(string.Join(", ", rulesApplied), recentLog[0].RuleApplied);
+        }
+
+         [Fact]
+        public void AddFromRecord_WhenCalled_StoresCorrectBatchId()
+        {
+            var auditService = new AuditService(_testDir);
+
+            FileRecord recordToBeLogged = new FileRecord
             {
-                service.AddEntry(log);
-            }
+                FileName = "JBL_Speaker_Manual.pdf",
+                Action = "Moved",
+                SourcePath = "Manuals/JBL_Speaker_Manual.pdf",
+                DestinationPath = "Manuals/Documents/JBL_Speaker_Manual.pdf",
+                Success = true
+            };
 
-            var result = service.GetLastBatch();
+            Guid guid = new Guid();
+            string[] rulesApplied = { "category" };
 
-            Assert.Equal(2, result.Count);
-            Assert.Equal(newBatchId, result[0].BatchId);
+            auditService.AddFromRecord(recordToBeLogged, guid, rulesApplied);
+
+            var recentLog = auditService.GetRecentLogs(1);
+
+            Assert.Equal(guid, recentLog[0].BatchId);
         }
 
     }
