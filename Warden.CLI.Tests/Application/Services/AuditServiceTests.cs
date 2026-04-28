@@ -76,7 +76,7 @@ namespace Warden.CLI.Tests.Application.Services
             Assert.Equal(string.Join(", ", rulesApplied), recentLog[0].RuleApplied);
         }
 
-         [Fact]
+        [Fact]
         public void AddFromRecord_WhenCalled_StoresCorrectBatchId()
         {
             var auditService = new AuditService(_testDir);
@@ -98,6 +98,91 @@ namespace Warden.CLI.Tests.Application.Services
             var recentLog = auditService.GetRecentLogs(1);
 
             Assert.Equal(guid, recentLog[0].BatchId);
+        }
+
+        [Fact]
+        public void GetRecentLogs_WhenLogFileDoesNotExist_ReturnsEmptyList()
+        {
+            var auditService = new AuditService(_testDir);
+
+            var recentLogs = auditService.GetRecentLogs(1);
+
+            Assert.Equal(new List<LogEntry>(), recentLogs);
+        }
+
+        [Fact]
+        public void GetRecentLogs_WhenCalled_ReturnsCorrectAmount()
+        {
+            var auditService = new AuditService(_testDir);
+
+            List<FileRecord> fileRecords = new List<FileRecord>
+            {
+                new FileRecord { FileName = "Notes.txt"},
+                new FileRecord { FileName = "Notes (1).txt"},
+                new FileRecord { FileName = "Notes (2).txt"},
+                new FileRecord { FileName = "Notes (3).txt"},
+                new FileRecord { FileName = "Notes (4).txt"}
+            };
+
+            string[] rulesApplied = { "category" };
+            foreach (var record in fileRecords)
+            {
+                Guid guid = new Guid();
+                auditService.AddFromRecord(record, guid, rulesApplied);
+            }
+
+            var recentLogs = auditService.GetRecentLogs(3);
+
+            Assert.Equal(3, recentLogs.Count);
+        }
+
+        [Fact]
+        public void GetRecentLogs_WhenCalled_ReturnsMostRecentFirst()
+        {
+            var auditService = new AuditService(_testDir);
+
+            List<FileRecord> fileRecords = new List<FileRecord>
+            {
+                new FileRecord { FileName = "old.pdf"},
+                new FileRecord { FileName = "recent.pdf"},
+                new FileRecord { FileName = "new.pdf"}
+            };
+
+            string[] rulesApplied = { "category" };
+            foreach (var record in fileRecords)
+            {
+                Guid guid = new Guid();
+                auditService.AddFromRecord(record, guid, rulesApplied);
+            }
+
+            var recentLogs = auditService.GetRecentLogs(2);
+
+            Assert.Equal(fileRecords[2].FileName, recentLogs[0].FileName);
+            Assert.Equal(fileRecords[1].FileName, recentLogs[1].FileName);
+            Assert.True(recentLogs[1].TimeStamp < recentLogs[0].TimeStamp);
+        }
+
+        [Fact]
+        public void GetRecentLogs_WhenLimitExceedsTotalEntries_ReturnAllEntries()
+        {
+            var auditService = new AuditService(_testDir);
+
+            List<FileRecord> fileRecords = new List<FileRecord>
+            {
+                new FileRecord { FileName = "first.csv"},
+                new FileRecord { FileName = "second.json"},
+            };
+
+            string[] rulesApplied = { "category" };
+            foreach (var record in fileRecords)
+            {
+                Guid guid = new Guid();
+                auditService.AddFromRecord(record, guid, rulesApplied);
+            }
+
+            var recentLogs = auditService.GetRecentLogs(100);
+
+            Assert.Equal(2, recentLogs.Count);
         }
 
     }
