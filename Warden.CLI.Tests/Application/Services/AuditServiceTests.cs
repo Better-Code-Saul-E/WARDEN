@@ -185,5 +185,61 @@ namespace Warden.CLI.Tests.Application.Services
             Assert.Equal(2, recentLogs.Count);
         }
 
+        [Fact]
+        public void GetLastBatch_WhenCalled_ReturnsOnlyMostRecentBatch()
+        {
+            var auditService = new AuditService(_testDir);
+            string[] rulesApplied = { "category" };
+
+            var batch1Id = Guid.NewGuid();
+            auditService.AddFromRecord(new FileRecord { FileName = "old1.txt" }, batch1Id, rulesApplied);
+            auditService.AddFromRecord(new FileRecord { FileName = "old2.txt" }, batch1Id, rulesApplied);
+
+            var batch2Id = Guid.NewGuid();
+            auditService.AddFromRecord(new FileRecord { FileName = "new.txt" }, batch2Id, rulesApplied);
+
+
+            var lastBatch = auditService.GetLastBatch();
+
+            Assert.Single(lastBatch);
+            Assert.Equal(batch2Id, lastBatch[0].BatchId);
+            Assert.Equal("new.txt", lastBatch[0].FileName);
+        }
+
+        [Fact]
+        public void GetLastBatch_WhenLastBatchHasMultipleFiles_ReturnsAllOfThem()
+        {
+            var auditService = new AuditService(_testDir);
+            string[] rulesApplied = { "category" };
+
+            var oldBatchId = Guid.NewGuid();
+            auditService.AddFromRecord(new FileRecord { FileName = "old.txt" }, oldBatchId, rulesApplied);
+
+            var targetBatchId = Guid.NewGuid();
+            var targetFiles = new List<string> { "file_a.png", "file_b.png", "file_c.png" };
+
+            foreach (var fileName in targetFiles)
+            {
+                auditService.AddFromRecord(new FileRecord { FileName = fileName }, targetBatchId, rulesApplied);
+            }
+
+            var lastBatch = auditService.GetLastBatch();
+
+            Assert.All(lastBatch, x => Assert.Equal(targetBatchId, x.BatchId));
+
+            Assert.Equal("file_c.png", lastBatch[0].FileName);
+            Assert.Equal("file_b.png", lastBatch[1].FileName);
+            Assert.Equal("file_a.png", lastBatch[2].FileName);
+        }
+
+        [Fact]
+        public void EnforceBatchLimit_WhenLogFileDoesNotExists_DoesNotThrow()
+        {
+            var auditService = new AuditService(_testDir);
+
+            var exception = Record.Exception(() => auditService.EnforceBatchLimit());
+
+            Assert.Null(exception);
+        }
     }
 }
