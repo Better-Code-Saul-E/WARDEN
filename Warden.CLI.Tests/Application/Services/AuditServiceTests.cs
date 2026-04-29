@@ -241,5 +241,74 @@ namespace Warden.CLI.Tests.Application.Services
 
             Assert.Null(exception);
         }
+
+        [Fact]
+        public void EnforceBatchLimit_WhenBatchCountIsUnderLimit_PreservesAllEntries()
+        {
+            var auditService = new AuditService(_testDir);
+
+            List<FileRecord> fileRecords = new List<FileRecord>
+            {
+                new FileRecord { FileName = "first.py"},
+                new FileRecord { FileName = "second.cs"},
+                new FileRecord { FileName = "third.js"},
+                new FileRecord { FileName = "fourth.ts"},
+                new FileRecord { FileName = "fifth.html"}
+            };
+            List<Guid> batchIds = new List<Guid>();
+            string[] rulesApplied = { "category" };
+
+            foreach (var record in fileRecords)
+            {
+                Guid guid = Guid.NewGuid();
+                auditService.AddFromRecord(record, guid, rulesApplied);
+                batchIds.Add(guid);
+            }
+
+            auditService.EnforceBatchLimit();
+            var allLogs = auditService.GetRecentLogs(fileRecords.Count);
+
+            Assert.Equal(5, allLogs.Select(x => x.BatchId).Distinct().Count());
+            Assert.Contains(allLogs, x => x.BatchId == batchIds[4]);
+        }
+
+        [Fact]
+        public void EnforceBatchLimit_WhenBatchCoundExceedsLimit_RemovesOldestBatches()
+        {
+            var auditService = new AuditService(_testDir);
+
+            List<FileRecord> fileRecords = new List<FileRecord>
+            {
+                new FileRecord { FileName = "first.py"},
+                new FileRecord { FileName = "second.cs"},
+                new FileRecord { FileName = "third.js"},
+                new FileRecord { FileName = "fourth.ts"},
+                new FileRecord { FileName = "fifth.html"},
+                new FileRecord { FileName = "sixth.css"},
+                new FileRecord { FileName = "seventh.java"},
+                new FileRecord { FileName = "eigth.sh"},
+                new FileRecord { FileName = "ninth.json"},
+                new FileRecord { FileName = "tenth.taml"},
+                new FileRecord { FileName = "eleventh.yaml"}
+            };
+            List<Guid> batchIds = new List<Guid>();
+            string[] rulesApplied = { "category" };
+
+            foreach (var record in fileRecords)
+            {
+
+                Guid guid = Guid.NewGuid();
+                auditService.AddFromRecord(record, guid, rulesApplied);
+                batchIds.Add(guid);
+            }
+
+            auditService.EnforceBatchLimit();
+            var recentLogs = auditService.GetRecentLogs(fileRecords.Count);
+
+            Assert.Equal(10, recentLogs.Select(x => x.BatchId).Distinct().Count());
+            Assert.DoesNotContain(recentLogs, x => x.BatchId == batchIds[0]);
+            Assert.Contains(recentLogs, x => x.BatchId == batchIds[10]);
+        }
+
     }
 }
