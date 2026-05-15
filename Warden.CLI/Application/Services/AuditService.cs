@@ -45,9 +45,11 @@ namespace Warden.CLI.Application.Services
                 return entries;
             }
 
-            foreach (var line in File.ReadLines(_logFilePath).Reverse())
+            var lines = File.ReadAllLines(_logFilePath);
+
+            for (int i = 1; i <= lines.Length && entries.Count < amount; i++)
             {
-                if (entries.Count >= amount) { break; }
+                var line = lines[^i];
 
                 if (string.IsNullOrWhiteSpace(line)) { continue; }
 
