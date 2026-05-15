@@ -131,6 +131,7 @@ namespace Warden.CLI.Application.Services
 
             List<string> entries = new List<string>();
             HashSet<Guid> batches = new HashSet<Guid>();
+            bool limitExceeded = false;
 
             foreach (var line in File.ReadLines(_logFilePath).Reverse())
             {
@@ -152,6 +153,7 @@ namespace Warden.CLI.Application.Services
                     {
                         if (batches.Count >= 10)
                         {
+                            limitExceeded = true;
                             break;
                         }
                         batches.Add(entry.BatchId);
@@ -162,8 +164,11 @@ namespace Warden.CLI.Application.Services
                 catch (JsonException) { }
             }
 
-            entries.Reverse();
-            File.WriteAllLines(_logFilePath, entries);
+            if (limitExceeded)
+            {
+                entries.Reverse();
+                File.WriteAllLines(_logFilePath, entries);
+            }
         }
     }
 }
