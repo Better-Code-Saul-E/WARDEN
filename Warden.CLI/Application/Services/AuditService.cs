@@ -21,20 +21,30 @@ namespace Warden.CLI.Application.Services
             _logFilePath = Path.Combine(logDirectory, "warden_log.json");
         }
 
-        public void AddFromRecord(FileRecord record, Guid batchId, string[] rulesApplied)
+        public void AddBatch(List<FileRecord> records, Guid batchId, string[] rulesApplied)
         {
-            LogEntry log = new LogEntry
-            {
-                TimeStamp = DateTime.Now,
-                BatchId = batchId,
-                FileName = record.FileName,
-                SourcePath = record.SourcePath,
-                DestinationPath = record.DestinationPath,
-                RuleApplied = string.Join(", ", rulesApplied),
-                Action = record.Action,
-            };
+            if (!records.Any()) return;
+            var serializedLines = new List<string>();
+            var ruleString = string.Join(", ", rulesApplied);
+            var timestamp = DateTime.Now;
 
-            AddEntry(log);
+            foreach (FileRecord record in records)
+            {
+                LogEntry log = new LogEntry
+                {
+                    TimeStamp = timestamp,
+                    BatchId = batchId,
+                    FileName = record.FileName,
+                    SourcePath = record.SourcePath,
+                    DestinationPath = record.DestinationPath,
+                    RuleApplied = ruleString,
+                    Action = record.Action,
+                };
+
+                serializedLines.Add(JsonSerializer.Serialize(log));
+            }
+
+            File.AppendAllLines(_logFilePath, serializedLines);
         }
         public List<LogEntry> GetRecentLogs(int amount)
         {
@@ -154,12 +164,6 @@ namespace Warden.CLI.Application.Services
 
             entries.Reverse();
             File.WriteAllLines(_logFilePath, entries);
-        }
-
-        private void AddEntry(LogEntry entry)
-        {
-            string serializedLog = JsonSerializer.Serialize(entry);
-            File.AppendAllText(_logFilePath, serializedLog + Environment.NewLine);
         }
     }
 }

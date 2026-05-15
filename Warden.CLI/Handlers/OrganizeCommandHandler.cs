@@ -23,18 +23,14 @@ namespace Warden.CLI.Handlers
             try
             {
                 var rules = SortRuleFactory.CreateRules(orderBy);
-                
+
                 OrganizeReport result = _organizerService.OrganizeDirectory(sourceDirectory, isDryRun, rules);
 
                 if (!isDryRun)
                 {
                     var batchId = Guid.NewGuid();
 
-                    foreach (var fileRecord in result.Files)
-                    {
-                        
-                        _auditService.AddFromRecord(fileRecord, batchId, orderBy);
-                    }
+                    _auditService.AddBatch(result.Files, batchId, orderBy);
                 }
 
                 _consoleFormatter.Render(result);
@@ -67,7 +63,7 @@ namespace Warden.CLI.Handlers
 
             if (fileRecord.Success)
             {
-                _auditService.AddFromRecord(fileRecord, batchId, orderBy);
+                _auditService.AddBatch(new List<FileRecord> { fileRecord }, batchId, orderBy);
             }
 
             _consoleFormatter.RenderSingleEvent(fileRecord);
