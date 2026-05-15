@@ -39,10 +39,7 @@ namespace Warden.CLI.Tests.Application.Services
             Guid guid = new Guid();
             string[] rulesApplied = { "category" };
 
-            foreach (var fileRecord in recordsToBeLogged)
-            {
-                auditService.AddFromRecord(fileRecord, guid, rulesApplied);
-            }
+            auditService.AddBatch(recordsToBeLogged, guid, rulesApplied);
 
             var recentLog = auditService.GetRecentLogs(1);
 
@@ -69,7 +66,7 @@ namespace Warden.CLI.Tests.Application.Services
             Guid guid = new Guid();
             string[] rulesApplied = { "category", "extension", "year" };
 
-            auditService.AddFromRecord(recordToBeLogged, guid, rulesApplied);
+            auditService.AddBatch(new List<FileRecord> { recordToBeLogged }, guid, rulesApplied);
 
             var recentLog = auditService.GetRecentLogs(1);
 
@@ -93,7 +90,7 @@ namespace Warden.CLI.Tests.Application.Services
             Guid guid = new Guid();
             string[] rulesApplied = { "category" };
 
-            auditService.AddFromRecord(recordToBeLogged, guid, rulesApplied);
+            auditService.AddBatch(new List<FileRecord> { recordToBeLogged }, guid, rulesApplied);
 
             var recentLog = auditService.GetRecentLogs(1);
 
@@ -125,11 +122,10 @@ namespace Warden.CLI.Tests.Application.Services
             };
 
             string[] rulesApplied = { "category" };
-            foreach (var record in fileRecords)
-            {
-                Guid guid = new Guid();
-                auditService.AddFromRecord(record, guid, rulesApplied);
-            }
+            Guid guid = Guid.NewGuid();
+
+            auditService.AddBatch(fileRecords, guid, rulesApplied);
+
 
             var recentLogs = auditService.GetRecentLogs(3);
 
@@ -151,8 +147,8 @@ namespace Warden.CLI.Tests.Application.Services
             string[] rulesApplied = { "category" };
             foreach (var record in fileRecords)
             {
-                Guid guid = new Guid();
-                auditService.AddFromRecord(record, guid, rulesApplied);
+                Guid guid = Guid.NewGuid();
+                auditService.AddBatch(new List<FileRecord> { record }, guid, rulesApplied);
             }
 
             var recentLogs = auditService.GetRecentLogs(2);
@@ -177,7 +173,7 @@ namespace Warden.CLI.Tests.Application.Services
             foreach (var record in fileRecords)
             {
                 Guid guid = new Guid();
-                auditService.AddFromRecord(record, guid, rulesApplied);
+                auditService.AddBatch(new List<FileRecord> { record }, guid, rulesApplied);
             }
 
             var recentLogs = auditService.GetRecentLogs(100);
@@ -192,11 +188,11 @@ namespace Warden.CLI.Tests.Application.Services
             string[] rulesApplied = { "category" };
 
             var batch1Id = Guid.NewGuid();
-            auditService.AddFromRecord(new FileRecord { FileName = "old1.txt" }, batch1Id, rulesApplied);
-            auditService.AddFromRecord(new FileRecord { FileName = "old2.txt" }, batch1Id, rulesApplied);
+            auditService.AddBatch(new List<FileRecord> { new FileRecord { FileName = "old1.txt" } }, batch1Id, rulesApplied);
+            auditService.AddBatch(new List<FileRecord> { new FileRecord { FileName = "old2.txt" } }, batch1Id, rulesApplied);
 
             var batch2Id = Guid.NewGuid();
-            auditService.AddFromRecord(new FileRecord { FileName = "new.txt" }, batch2Id, rulesApplied);
+            auditService.AddBatch(new List<FileRecord> { new FileRecord { FileName = "new.txt" } }, batch2Id, rulesApplied);
 
 
             var lastBatch = auditService.GetLastBatch();
@@ -213,14 +209,14 @@ namespace Warden.CLI.Tests.Application.Services
             string[] rulesApplied = { "category" };
 
             var oldBatchId = Guid.NewGuid();
-            auditService.AddFromRecord(new FileRecord { FileName = "old.txt" }, oldBatchId, rulesApplied);
+            auditService.AddBatch(new List<FileRecord> { new FileRecord { FileName = "old.txt" } }, oldBatchId, rulesApplied);
 
             var targetBatchId = Guid.NewGuid();
             var targetFiles = new List<string> { "file_a.png", "file_b.png", "file_c.png" };
 
             foreach (var fileName in targetFiles)
             {
-                auditService.AddFromRecord(new FileRecord { FileName = fileName }, targetBatchId, rulesApplied);
+                auditService.AddBatch(new List<FileRecord> { new FileRecord { FileName = fileName } }, targetBatchId, rulesApplied);
             }
 
             var lastBatch = auditService.GetLastBatch();
@@ -261,7 +257,7 @@ namespace Warden.CLI.Tests.Application.Services
             foreach (var record in fileRecords)
             {
                 Guid guid = Guid.NewGuid();
-                auditService.AddFromRecord(record, guid, rulesApplied);
+                auditService.AddBatch(new List<FileRecord> { record }, guid, rulesApplied);
                 batchIds.Add(guid);
             }
 
@@ -298,7 +294,7 @@ namespace Warden.CLI.Tests.Application.Services
             {
 
                 Guid guid = Guid.NewGuid();
-                auditService.AddFromRecord(record, guid, rulesApplied);
+                auditService.AddBatch(new List<FileRecord> { record }, guid, rulesApplied);
                 batchIds.Add(guid);
             }
 
