@@ -3,12 +3,23 @@ using Warden.CLI.Application.Services;
 
 namespace Warden.CLI.Tests.Application.Services
 {
-    public class AuditServiceTests
+    public class AuditServiceTests : IDisposable
     {
         private readonly string _testDir;
+
+
         public AuditServiceTests()
         {
             _testDir = Path.Combine(Path.GetTempPath(), "Warden_AuditService_" + Guid.NewGuid());
+        }
+
+
+        public void Dispose()
+        {
+            if (Directory.Exists(_testDir))
+            {
+                Directory.Delete(_testDir, recursive: true);
+            }
         }
 
         [Fact]
