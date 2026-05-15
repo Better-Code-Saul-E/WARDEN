@@ -47,11 +47,25 @@ namespace Warden.CLI.Commands
                 if (proceed)
                 {
                     _consoleFormatter.RenderInfo($"Performing initial cleanup of '{sourcePath}'...");
-                    var exitCode = _commandHandler.ProcessDirectory(sourcePath, false, settings.OrderBy);
 
-                    if (exitCode != ExitCode.Success)
+                    try
                     {
-                        return (int)exitCode;
+                        _commandHandler.ProcessDirectory(settings.SourcePath, false, settings.OrderBy);
+                    }
+                    catch (DirectoryNotFoundException ex)
+                    {
+                        _consoleFormatter.RenderError("finding directory", ex.Message);
+                        return (int)ExitCode.InvalidPath;
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        _consoleFormatter.RenderError("validating rules", ex.Message);
+                        return (int)ExitCode.InvalidConfiguration;
+                    }
+                    catch (Exception ex)
+                    {
+                        _consoleFormatter.RenderError("during initial cleanup", ex.Message);
+                        return (int)ExitCode.UnhandledError;
                     }
                 }
                 else

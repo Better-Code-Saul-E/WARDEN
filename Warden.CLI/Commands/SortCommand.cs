@@ -20,12 +20,22 @@ namespace Warden.CLI.Commands
         {
             try
             {
-                var exitCode = _commandHandler.ProcessDirectory(settings.SourcePath, false, settings.OrderBy);
-                return (int)exitCode;
+                _commandHandler.ProcessDirectory(settings.SourcePath, false, settings.OrderBy);
+                return (int)ExitCode.Success;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                _consoleFormatter.RenderError("finding directory", ex.Message);
+                return (int)ExitCode.InvalidPath;
+            }
+            catch (ArgumentException ex)
+            {
+                _consoleFormatter.RenderError("validating rules", ex.Message);
+                return (int)ExitCode.InvalidConfiguration;
             }
             catch (Exception ex)
             {
-                _consoleFormatter.RenderError("executing command", ex.Message);
+                _consoleFormatter.RenderError("executing sort command", ex.Message);
                 return (int)ExitCode.UnhandledError;
             }
         }

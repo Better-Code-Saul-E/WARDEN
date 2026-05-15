@@ -18,41 +18,22 @@ namespace Warden.CLI.Handlers
             _consoleFormatter = consoleFormatter;
         }
 
-        public ExitCode ProcessDirectory(string sourceDirectory, bool isDryRun, string[] orderBy)
+        public void ProcessDirectory(string sourceDirectory, bool isDryRun, string[] orderBy)
         {
-            try
+            var rules = SortRuleFactory.CreateRules(orderBy);
+
+            OrganizeReport result = _organizerService.OrganizeDirectory(sourceDirectory, isDryRun, rules);
+
+            if (!isDryRun)
             {
-                var rules = SortRuleFactory.CreateRules(orderBy);
+                var batchId = Guid.NewGuid();
 
-                OrganizeReport result = _organizerService.OrganizeDirectory(sourceDirectory, isDryRun, rules);
-
-                if (!isDryRun)
-                {
-                    var batchId = Guid.NewGuid();
-
-                    _auditService.AddBatch(result.Files, batchId, orderBy);
-                }
-
-                _consoleFormatter.Render(result);
-
-                _auditService.EnforceBatchLimit();
-                return ExitCode.Success;
+                _auditService.AddBatch(result.Files, batchId, orderBy);
             }
-            catch (DirectoryNotFoundException ex)
-            {
-                _consoleFormatter.RenderError("finding directory", ex.Message);
-                return ExitCode.InvalidPath;
-            }
-            catch (ArgumentException ex)
-            {
-                _consoleFormatter.RenderError("validating rules", ex.Message);
-                return ExitCode.InvalidConfiguration;
-            }
-            catch (Exception ex)
-            {
-                _consoleFormatter.RenderError("during execution", ex.Message);
-                return ExitCode.UnhandledError;
-            }
+
+            _consoleFormatter.Render(result);
+
+            _auditService.EnforceBatchLimit();
         }
 
         public void ProcessSingleFile(FileInfo file, string sourceDirectory, string[] orderBy, Guid batchId)
