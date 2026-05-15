@@ -81,6 +81,7 @@ namespace Warden.CLI.Commands
             _consoleFormatter.RenderInstruction("Press", "Ctrl+C", "to stop.");
 
             var watchSessionBatchId = Guid.NewGuid();
+            bool filesProcessed = false;
 
             using var watcher = new FileSystemWatcher(sourcePath);
 
@@ -111,6 +112,7 @@ namespace Warden.CLI.Commands
                 {
                     var fileInfo = new FileInfo(e.FullPath);
                     _commandHandler.ProcessSingleFile(fileInfo, sourcePath, settings.OrderBy, watchSessionBatchId);
+                    filesProcessed = true;
 
                 }
                 catch (IOException)
@@ -135,9 +137,13 @@ namespace Warden.CLI.Commands
             await tcs.Task;
 
             _consoleFormatter.RenderInfo("Stopping watcher...");
-            _consoleFormatter.RenderInfo("Cleaning up audit log...");
-            _auditService.EnforceBatchLimit();
 
+            if (filesProcessed)
+            {
+                _consoleFormatter.RenderInfo("Cleaning up audit log...");
+                _auditService.EnforceBatchLimit();
+            }
+            
             return (int)ExitCode.Success;
         }
 

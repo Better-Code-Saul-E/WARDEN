@@ -29,11 +29,11 @@ namespace Warden.CLI.Handlers
                 var batchId = Guid.NewGuid();
 
                 _auditService.AddBatch(result.Files, batchId, orderBy);
+
+                _auditService.EnforceBatchLimit();
             }
 
             _consoleFormatter.Render(result);
-
-            _auditService.EnforceBatchLimit();
         }
 
         public void ProcessSingleFile(FileInfo file, string sourceDirectory, string[] orderBy, Guid batchId)
